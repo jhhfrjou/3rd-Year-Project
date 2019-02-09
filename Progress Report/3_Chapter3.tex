@@ -1,0 +1,38 @@
+%% ----------------------------------------------------------------
+%% Introduction.tex
+%% ---------------------------------------------------------------- 
+\chapter{Report on Technical Progress}
+I first need to create a simulation of the Lanchester Systems in order optimise them. To ensure I have produced accurate simulations of these dynamics I have built a simulation at each stage of the complexity, from the One-to-One engagement to Many-to-Many engagements.
+\section{One to One Simulation}
+I have created a simulation of the original Lanchester dynamics. In these simulations input parameters are specified, initial force strength and their attrition factors, and the simulation is run until one of the forces has been destroyed, then returning the size of the remaining force. The outcome of the simulation can be calculated in advanced with the initial conditions and have been used to check the accuracy of my simulation.  
+\begin{figure}[h!]
+    \includegraphics[width=\linewidth]{SurvivingForces.png}
+    \label{fig:Graph 1}
+\end{figure}
+This graph shows the expected number of surviving units using the formula.
+\[ sqrt{frac{k_B R_0^2 - k_R B_0^2} {kB} } = Surviving R\] 
+\[ sqrt{frac{k_B B_0^2 - k_B R_0^2} {kR} } = Surviving B\] 
+
+\section{One to Many Simulation}
+I then extended the model in order to simulate one to many engagements. This is the first model where a changing engagement strategy for the homogeneous force would alter the outcome of the simulation. I have implemented some basic engagement strategies, where the attrition factors are functions and compared the survival rates of each by comparing the smallest number of homogenous forces in order to not lose the engagement. There has been research in the optimisation strategy for one to many engagements, so I compared my simulation to the proofs in the paper.
+
+\begin{figure}[h!]
+    \includegraphics[width=\linewidth]{SurvivingForceHomogeneous20050.png}
+    \caption{Surviving Forces in One to Many situation}
+  \end{figure}
+This graph shows the way that attacking the most damaging units first increases the survivability.
+\section{Many to Many Simulation}
+I have created a basic many-to-many simulation. This simulation currently only implements constant attrition factors in line with Colegrave and Hyde’s paper. 
+It uses the formula below
+\[ \frac{dR_0}{dt} = k_{R_{00}} B_0 + k_{R_{01}} B_1\]
+\[ \frac{dR_1}{dt} = k_{R_{10}} B_0 + k_{R_{11}} B_1\]
+\[ \frac{dB_0}{dt} = k_{B_{00}} R_0 + k_{B_{01}} R_1\]
+\[ \frac{dB_1}{dt} = k_{B_{00}} R_0 + k_{B_{11}} R_1\]
+whch has been reduced to 
+\[\begin{pmatrix} \frac{dR_0}{dt}  \\ \frac{dR_1}{dt}  \end{pmatrix} = \begin{pmatrix}
+    k_{R_{00}} && k_{R_{01}} \\
+    k_{R_{10}} && k_{R_{11}} \\
+\end{pmatrix} \times
+\begin{pmatrix} B_0 \\ B_1
+\end{pmatrix}\]
+From this I have extended this simulation to have the same framework which adjusts the attrition factor matrix, that I created in the One-to-Many simulations. 

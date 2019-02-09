@@ -1,0 +1,21 @@
+
+\chapter{Plan of Remaining Work}
+I intend to test the prototype simulate a many to many Lanchester dynamic. After verifying that this simulation is functional, I will then be able to use this simulation in testing the effectiveness of engagement strategies. In my work I intend on optimising the total number of surviving units left at the end of the engagement. This may be altered slightly so that each arm is given a different weighting. 
+
+I intend on using 3 optimisation techniques: Genetic algorithms, simulated annealing and stochastic hill climbing to find an optimal solution to this problem. I will attempt to find a greedy solution where each arm considers what would be best for their own survival and optimising their survivability:
+The first are the weights given to each enemy arm from each friendly arm. These weights will be based on the combination of the products of attrition factor of that friendly arm onto the enemy arm, the attrition factor of the enemy arm onto the friendly arm and the numerical sizes of both. 
+From this, the second weights are the ways that these weights affect the way the distribution of fire is split by each arm against each enemy arm.
+
+When I attempt to optimise the first set of weights, I will use the assumption to attack the enemy fully proportionally to the weight values as a baseline. I will test a variety of optimisation techniques and see which result the largest number of survivors. A key issue with these weights is they must all be positive which would result in my own implementation of the optimisation techniques being used. 
+To train this I will create a set of 50 scenarios with a range of complexity of forces, from 2 to 10 arms on each size. From there I will test these weights on 20 new scenarios again with a range of complexities.
+After this I will compare the ability of these weights to produce the optimal solution. The weights will be scored in each of the tests as a percentage of each weight’s survivors compare with the weight with the greatest number of surviving units. E.g. Weight A results in 45 surviving, Weight B results in 50 and Weight C results in 35 units surviving. Weight A would score 0.9, B would score 1.0 and C would score 0.7. The weight with the highest average score would be used when optimising for the next step. 
+This will follow a similar pattern to the first stage with the same training data and testing data. After this I will use these finding to make a simplified interpretation of these findings to make them more useable. 
+
+\begin{landscape}
+    \includegraphics[width=\linewidth]{gantt.png}
+\end{landscape}
+
+\chapter{Word Count}
+I have 2913 words. This is calculated by putting the shortened pdf through 
+
+http://www.montereylanguages.com/pdf-word-count-online-free-tool.html
