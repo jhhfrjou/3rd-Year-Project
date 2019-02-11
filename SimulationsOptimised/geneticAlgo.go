@@ -24,6 +24,30 @@ func geneticAlgo(iters, samples int) []float64 {
 	return bestWeight
 }
 
+func getNextGen(currentGen [][]float64, mutateFactor float64) [][]float64 {
+	numSample := len(currentGen)
+	nextGen := make([][]float64, numSample)
+	wg := sync.WaitGroup{}
+	wg.Add(numSample)
+	for i := 0; i < numSample; i++ {
+		go func(index int) {
+			if index < 10 {
+				nextGen[index] = currentGen[index]
+			} else {
+				i1 := rand.Intn(numSample / 2)
+				i2 := rand.Intn(numSample / 2)
+				child := crossOver(currentGen[i1], currentGen[i2])
+				mutate(child, mutateFactor)
+				nextGen[index] = child
+			}
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
+	return nextGen
+}
+
+
 func getScores(samples [][]float64, scenario scenario) float64 {
 	wg := sync.WaitGroup{}
 	wg.Add(len(samples))
@@ -62,25 +86,3 @@ func mutate(w []float64, mutateFactor float64) {
 	}
 }
 
-func getNextGen(currentGen [][]float64, mutateFactor float64) [][]float64 {
-	numSample := len(currentGen)
-	nextGen := make([][]float64, numSample)
-	wg := sync.WaitGroup{}
-	wg.Add(numSample)
-	for i := 0; i < numSample; i++ {
-		go func(index int) {
-			if index < 10 {
-				nextGen[index] = currentGen[index]
-			} else {
-				i1 := rand.Intn(numSample / 2)
-				i2 := rand.Intn(numSample / 2)
-				child := crossOver(currentGen[i1], currentGen[i2])
-				mutate(child, mutateFactor)
-				nextGen[index] = child
-			}
-			wg.Done()
-		}(i)
-	}
-	wg.Wait()
-	return nextGen
-}

@@ -19,7 +19,8 @@ func anneal(iters int, samples int) ([]float64, float64) {
 				oldScore = newScore
 				weight = newWeight
 			} else {
-				chance := math.Exp(-sum(deltaWeight) / float64(iters-i))
+				deltaScore := oldScore - newScore
+				chance := math.Exp(-deltaScore/ float64(iters-i))
 				p := rand.Float64()
 				if chance < p {
 					oldScore = newScore
