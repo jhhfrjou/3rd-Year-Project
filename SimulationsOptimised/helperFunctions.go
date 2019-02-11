@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math"
 	"math/rand"
 	"sync"
 	"time"
@@ -55,16 +54,8 @@ func copyScen(original scenario) scenario {
 	b := make([]float64, len(original.b))
 	copy(r, original.r)
 	copy(b, original.b)
-	kR := make([][]float64, len(original.kR))
-	for i := range original.kR {
-		kR[i] = make([]float64, len(original.kR[i]))
-		copy(kR[i], original.kR[i])
-	}
-	kB := make([][]float64, len(original.kB))
-	for i := range original.kB {
-		kB[i] = make([]float64, len(original.kB[i]))
-		copy(kB[i], original.kB[i])
-	}
+	kR := copyMatrix(original.kR)
+	kB := copyMatrix(original.kB)
 	return scenario{r, b, kR, kB}
 }
 
@@ -112,19 +103,26 @@ func getTestingScenario() scenario {
 	return scenario{R, B, kR, kB}
 }
 
-func getRandomWeight() []float64 {
-	weights := make([]float64, 16)
-	weights[15] = math.SmallestNonzeroFloat64
-	for i := 0; i < 15; i++ {
-		weights[i] = rand.Float64()
+func getRandomWeight(scenario scenario) [][]float64 {
+	weights := make([][]float64, len(scenario.kR))
+	for i := range weights {
+		weights[i] = getRandomVector(len(scenario.kR[i]))
 	}
 	return weights
 }
 
-func getRandomWeights(num int) [][]float64 {
-	samples := [][]float64{}
+func getRandomWeights(scenario scenario, sampleSize int) [][][]float64 {
+	weights := make([][][]float64, sampleSize)
+	for i := range weights {
+		weights[i] = getRandomWeight(scenario)
+	}
+	return weights
+}
+
+func getRandomVector(num int) []float64 {
+	samples := []float64{}
 	for i := 0; i < num; i++ {
-		samples = append(samples, getRandomWeight())
+		samples = append(samples, rand.Float64())
 	}
 	return samples
 }
@@ -143,6 +141,15 @@ func combs(inputs []float64) (combs []float64) {
 		combs = append(combs, comb)
 	}
 	return combs
+}
+
+func copyMatrix(original [][]float64) [][]float64 {
+	copied := make([][]float64, len(original))
+	for i := range original {
+		copied[i] = make([]float64, len(original[i]))
+		copy(copied[i], original[i])
+	}
+	return copied
 }
 
 type boolgen struct {
@@ -175,28 +182,29 @@ func staticWeight(number float64) []float64 {
 	return weight
 }
 
-func diff(weights []float64, policyCode int, scen scenario) []float64 {
-	score, _ := simulate(scen, weights, policyCode)
-	diffs := make([]float64, len(weights))
+func diff(allocation [][]float64, policyCode int, scen scenario, delta float64) [][]float64 {
+	score, _ := simulate(scen, allocation, policyCode)
+	diffs := make([][]float64, len(allocation))
 	wg := sync.WaitGroup{}
-	wg.Add(len(weights))
-	for i := range weights {
-		go func(index int) {
-			diffs[index] = diffWeightScore(index, policyCode, 0.000000001, score, weights, scen)
-			wg.Done()
-		}(i)
+	wg.Add(len(allocation))
+	for i := range allocation {
+		diffs[i] = make([]float64, len(allocation[i]))
+		for j := range allocation[i] {
+			go func(indexI, indexJ int) {
+				diffs[indexI][indexJ] = diffWeightScore(indexI, indexJ, policyCode, delta, score, allocation, scen)
+				wg.Done()
+			}(i, j)
+		}
 	}
 	wg.Wait()
 
 	return diffs
 }
 
-func diffWeightScore(index, policyCode int, delta, origScore float64, original []float64, scen scenario) float64 {
-	weights := make([]float64, len(original))
-	copy(weights, original)
-
-	weights[index] = delta + weights[index]
-	score, _ := simulate(scen, weights, policyCode)
+func diffWeightScore(indexX, indexY, policyCode int, delta, origScore float64, original [][]float64, scen scenario) float64 {
+	differential := copyMatrix(original)
+	differential[indexX][indexY] = delta + differential[indexX][indexY]
+	score, _ := simulate(scen, differential, policyCode)
 	diff := score - origScore
 	return diff / delta
 }

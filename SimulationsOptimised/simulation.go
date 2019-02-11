@@ -8,7 +8,7 @@ import matrix "github.com/skelterjohn/go.matrix"
 	2. Semi-Dynamic
 	3. Dynamic
 */
-func simulate(orig scenario, weights []float64, policyCode int) (float64, int) {
+func simulate(orig scenario, allocation [][]float64, policyCode int) (float64, int) {
 	scenario := copyScen(orig)
 	rAllGone := false
 	bAllGone := false
@@ -19,7 +19,7 @@ func simulate(orig scenario, weights []float64, policyCode int) (float64, int) {
 	var alteredConsts *matrix.DenseMatrix
 	var alteredEnemy *matrix.DenseMatrix
 	if policyCode == 1 {
-		alteredConsts = alterFactors(scenario, weights)
+		alteredConsts = alterFactors(scenario.kR, allocation)
 		alteredEnemy = enemyEqualSplit(scenario.kB, scenario.r)
 	}
 	if policyCode == 3 {
@@ -27,7 +27,7 @@ func simulate(orig scenario, weights []float64, policyCode int) (float64, int) {
 	}
 	for !(rAllGone || bAllGone) {
 		if policyCode != 1 && change {
-			alteredConsts = alterFactors(scenario, weights)
+			alteredConsts = alterFactors(scenario.kR, allocation)
 			alteredEnemy = enemyEqualSplit(scenario.kB, scenario.r)
 		}
 		dB, _ := alteredConsts.Times(r)
@@ -56,21 +56,16 @@ func enemyEqualSplit(factors [][]float64, own []float64) *matrix.DenseMatrix {
 	return factor
 }
 
-func alterFactors(scen scenario, weights []float64) *matrix.DenseMatrix {
+func alterFactors(friendlyKill, weights [][]float64) *matrix.DenseMatrix {
 	altered := [][]float64{}
-	for j := range scen.kR[0] {
-		scores := []float64{}
-		for i := range scen.kR {
-			scored := score([]float64{scen.kR[i][j], scen.kB[j][i], scen.r[j], scen.b[i]}, weights)
-			scores = append(scores, scored)
+	for i := range weights {
+		row := []float64{}
+		for j := range weights[i] {
+			row[j] = friendlyKill[i][j] * weights[i][j]
 		}
-		sum := sum(scores)
-		for i := range scores {
-			scores[i] = scores[i] * scen.kR[i][j] / sum
-		}
-		altered = append(altered, scores)
+		altered = append(altered, row)
 	}
-	return matrix.MakeDenseMatrixStacked(altered).Transpose()
+	return matrix.MakeDenseMatrixStacked(altered)
 }
 
 func score(factors []float64, weights []float64) float64 {
