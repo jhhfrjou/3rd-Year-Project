@@ -38,9 +38,9 @@ func getNextGen(currentGen []allocation, mutateFactor float64) []allocation {
 			} else {
 				i1 := rand.Intn(numSample / 2)
 				i2 := rand.Intn(numSample / 2)
-				child := allocation{crossOver(currentGen[i1].fireAllocation, currentGen[i2].fireAllocation), -math.MaxFloat64}
-				mutate(child.fireAllocation, mutateFactor)
-				nextGen[index] = child
+				child := crossOver(currentGen[i1].fireAllocation, currentGen[i2].fireAllocation)
+				child = mutate(child, mutateFactor)
+				nextGen[index] = allocation{child, -math.MaxFloat64}
 			}
 			wg.Done()
 		}(i)
@@ -68,26 +68,34 @@ func getScores(samples []allocation, scenario scenario) float64 {
 }
 
 func crossOver(p1, p2 [][]float64) [][]float64 {
-	child := make([][]float64, len(p1))
-	for i := range p1 {
-		child[i] = make([]float64,len(p1[i]))
-		for j := range p1[i] {
+	child := make([][]float64, len(p1[0]))
+	sumed := 0.0
+	for j := range p1[0] {
+		child[j] = make([]float64, len(p1))
+		for i := range p1 {
 			if randomBool.Bool() {
-				child[i][j] = p1[i][j]
+				child[j][i] = p1[i][j]
 			} else {
-				child[i][j] = p2[i][j]
+				child[j][i] = p2[i][j]
 			}
 		}
+		sumed = sum(child[j])
+		child[j] = scale(1.0/sumed, child[j])
 	}
-	return child
+	return transpose(child)
 }
 
-func mutate(w [][]float64, mutateFactor float64) {
-	for i := range w {
-		for j := range w[i] {
+func mutate(w [][]float64, mutateFactor float64) [][]float64 {
+	transposed := transpose(w)
+	sumed := 0.0
+	for i, vec := range transposed {
+		for j := range vec {
 			if rand.Float64() < mutateFactor {
-				w[i][j] = rand.Float64()
+				transposed[i][j] = rand.Float64()
 			}
 		}
+		sumed = sum(transposed[i])
+		transposed[i] = scale(1.0/sumed, transposed[i])
 	}
+	return transpose(transposed)
 }

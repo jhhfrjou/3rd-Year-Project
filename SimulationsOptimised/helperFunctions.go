@@ -104,8 +104,8 @@ func getDevelopingScenario() scenario {
 }
 
 func getBigDevelopingScenario() scenario {
-	R := []float64{11, 41, 15, 13, 41, 28, 28, 34, 33, 49, 45, 12, 44}
-	B := []float64{17, 11, 10, 24, 19, 21, 16, 18, 17, 20, 18, 19}
+	R := []float64{110, 410, 150, 130, 410, 280, 280, 340, 330, 490, 450, 120, 440}
+	B := []float64{170, 110, 100, 240, 190, 210, 160, 180, 170, 200, 180, 190}
 	kR := [][]float64{
 		{0.6645600532184904, 0.692024587353112, 0.7302314772948083, 0.08552050754191123, 0.0019038945142366389, 0.35576726540923664, 0.5203802857122278, 0.21647114665497036, 0.44846436394045647, 0.8475002622646813, 0.8058717675376446, 0.37026753645051064, 0.30220237504213365},
 		{0.6868230728671094, 0.17326623818270528, 0.4283570818068078, 0.6227283173637045, 0.915821314612957, 0.2318300419376769, 0.15184340208190175, 0.4020708452718306, 0.08247967651135, 0.24784452318699535, 0.7185304493527748, 0.6432040265702031, 0.1340841627502418},
@@ -170,11 +170,11 @@ func prettyPrintAllocation(allocation allocation) {
 }
 
 func getRandomWeight(scenario scenario) allocation {
-	weights := make([][]float64, len(scenario.kR))
+	weights := make([][]float64, len(scenario.kR[0]))
 	for i := range weights {
-		weights[i] = getRandomVector(len(scenario.kR[i]))
+		weights[i] = getRandomVector(len(scenario.kR))
 	}
-	return allocation{weights, -math.MaxFloat64}
+	return allocation{transpose(weights), -math.MaxFloat64}
 }
 
 func getRandomWeights(scenario scenario, sampleSize int) []allocation {
@@ -190,7 +190,21 @@ func getRandomVector(num int) []float64 {
 	for i := 0; i < num; i++ {
 		samples = append(samples, rand.Float64())
 	}
-	return samples
+	sumed := sum(samples)
+	return scale(1.0/sumed,samples)
+}
+
+func transpose(original [][]float64) [][]float64 {
+	transposed := make([][]float64, len(original[0]))
+	for j, row := range original {
+		for i,val := range row {
+			if j == 0 {
+				transposed[i] = make([]float64, len(original))
+			}
+			transposed[i][j] = val
+		}
+	}
+	return transposed
 }
 
 //Adapted from https://github.com/mxschmitt/golang-combinations
