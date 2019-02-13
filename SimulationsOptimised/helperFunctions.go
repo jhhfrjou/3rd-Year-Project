@@ -38,7 +38,10 @@ func scale(scalor float64, vector []float64) []float64 {
 }
 
 func matScale(scalor float64, m [][]float64) [][]float64 {
-	return [][]float64{}
+	for i := range m {
+		m[i] = scale(scalor,m[i])
+	}
+	return m
 }
 
 func vecAdd(v1, v2 []float64, add bool) []float64 {
@@ -65,7 +68,12 @@ func vecAdd(v1, v2 []float64, add bool) []float64 {
 }
 
 func matAdd(m1, m2 [][]float64, add bool) [][]float64 {
-	return [][]float64{}
+	m3 := make([][]float64, len(m1))
+	for i := range m3 {
+		m3[i] = vecAdd(m1[i],m2[i],add)
+	}
+	return m3
+
 }
 
 func sum(array []float64) (sum float64) {
@@ -259,7 +267,7 @@ func diff(allocation [][]float64, policyCode int, scen scenario, delta float64) 
 	score, _ := simulate(scen, allocation, policyCode)
 	diffs := make([][]float64, len(allocation))
 	wg := sync.WaitGroup{}
-	wg.Add(len(allocation))
+	wg.Add(len(allocation)*len(allocation[0]))
 	for i := range allocation {
 		diffs[i] = make([]float64, len(allocation[i]))
 		for j := range allocation[i] {
