@@ -1,16 +1,17 @@
 package main
 
 import (
+	"math"
 	"math/rand"
 	"sync"
 )
 
-func pso(iters, samples int) []float64 {
-	currentWeights := getRandomWeights(samples)
-	bestWeight := getRandomWeight()
-	bestWeights := getRandomWeights(samples)
-	prevVelocity := getRandomWeights(samples)
-	scenario := getTestingScenario()
+func pso(iters, samples int) allocation {
+	scenario := getBigDevelopingScenario()
+	currentWeights := getRandomWeights(scenario, samples)
+	bestWeight := getRandomWeight(scenario)
+	bestWeights := getRandomWeights(scenario, samples)
+	prevVelocity := getRandomWeights(scenario, samples)
 	wg := sync.WaitGroup{}
 
 	ownBestBias := 0.01
@@ -20,9 +21,9 @@ func pso(iters, samples int) []float64 {
 		for j := 0; j < samples; j++ {
 			go func(thatLoop int) {
 				prevVelocity[thatLoop], currentWeights[thatLoop] = indPso(currentWeights[thatLoop], bestWeights[thatLoop], bestWeight, prevVelocity[thatLoop], ownBestBias, allBestBias, i, iters, scenario)
-				if currentWeights[thatLoop][15] > bestWeights[thatLoop][15] {
-					copy(bestWeights[thatLoop], currentWeights[thatLoop])
-					if currentWeights[thatLoop][15] > bestWeight[15] {
+				if currentWeights[thatLoop].score > bestWeights[thatLoop].score {
+					bestWeights[thatLoop] = copyAllocation(currentWeights[thatLoop])
+					if currentWeights[thatLoop].score > bestWeight.score {
 						bestWeight = bestWeights[thatLoop]
 					}
 				}
@@ -34,15 +35,15 @@ func pso(iters, samples int) []float64 {
 	return bestWeight
 }
 
-func indPso(currentWeight, pbestWeight, bestWeight, prevVelocity []float64, ownBias, allBias float64, iter, totalIters int, scenario scenario) (newV, newWeight []float64) {
+func indPso(currentWeight, pbestWeight, bestWeight, prevVelocity allocation, ownBias, allBias float64, iter, totalIters int, scenario scenario) (allocation, allocation) {
 	ownBestRand := rand.Float64()
 	allBestRand := rand.Float64()
 	inertia := float64(totalIters-iter) * 0.00001
-	inertial := scale(inertia, prevVelocity)
-	ownBestVec := scale(ownBias*ownBestRand, vecAdd(pbestWeight, currentWeight, false))
-	allBestVec := scale(allBias*allBestRand, vecAdd(bestWeight, currentWeight, false))
-	newV = vecAdd(inertial, vecAdd(ownBestVec, allBestVec, true), true)
-	currentWeight = vecAdd(currentWeight, newV, true)
-	currentWeight[15], _ = simulate(scenario, currentWeight, 1)
-	return newV, currentWeight
+	inertial := matScale(inertia, prevVelocity.fireAllocation)
+	ownBestVec := matScale(ownBias*ownBestRand, matAdd(pbestWeight.fireAllocation, currentWeight.fireAllocation, false))
+	allBestVec := matScale(allBias*allBestRand, matAdd(bestWeight.fireAllocation, currentWeight.fireAllocation, false))
+	newV := matAdd(inertial, matAdd(ownBestVec, allBestVec, true), true)
+	newFireAlloc := matAdd(currentWeight.fireAllocation, newV, true)
+	newFireScore, _ := simulate(scenario, newFireAlloc, 1)
+	return allocation{newV, -math.MaxFloat64}, allocation{newFireAlloc, newFireScore}
 }

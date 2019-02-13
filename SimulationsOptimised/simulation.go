@@ -14,21 +14,21 @@ func simulate(orig scenario, allocation [][]float64, policyCode int) (float64, i
 	bAllGone := false
 	change := false
 	count := 0
-	r := matrix.MakeDenseMatrix(scenario.r, len(scenario.r), 1)
-	b := matrix.MakeDenseMatrix(scenario.b, len(scenario.b), 1)
+	r := matrix.MakeDenseMatrix(scenario.R, len(scenario.R), 1)
+	b := matrix.MakeDenseMatrix(scenario.B, len(scenario.B), 1)
 	var alteredConsts *matrix.DenseMatrix
 	var alteredEnemy *matrix.DenseMatrix
 	if policyCode == 1 {
-		alteredConsts = alterFactors(scenario.kR, allocation)
-		alteredEnemy = enemyEqualSplit(scenario.kB, scenario.r)
+		alteredConsts = alterFactors(scenario.KR, allocation)
+		alteredEnemy = enemyEqualSplit(scenario.KB, scenario.R)
 	}
 	if policyCode == 3 {
 		change = true
 	}
 	for !(rAllGone || bAllGone) {
 		if policyCode != 1 && change {
-			alteredConsts = alterFactors(scenario.kR, allocation)
-			alteredEnemy = enemyEqualSplit(scenario.kB, scenario.r)
+			alteredConsts = alterFactors(scenario.KR, allocation)
+			alteredEnemy = enemyEqualSplit(scenario.KB, scenario.R)
 		}
 		dB, _ := alteredConsts.Times(r)
 		dR, _ := alteredEnemy.Times(b)
@@ -36,12 +36,12 @@ func simulate(orig scenario, allocation [][]float64, policyCode int) (float64, i
 		dR.Scale(0.001)
 		r.Subtract(dR)
 		b.Subtract(dB)
-		rAllGone, scenario.r = winCondition(scenario.r)
-		bAllGone, scenario.b = winCondition(scenario.b)
+		rAllGone, scenario.R = winCondition(scenario.R)
+		bAllGone, scenario.B = winCondition(scenario.B)
 		count++
 	}
 
-	return sum(scenario.r), count
+	return sum(scenario.R), count
 }
 
 func enemyEqualSplit(factors [][]float64, own []float64) *matrix.DenseMatrix {
