@@ -335,24 +335,26 @@ func diff(allocation [][]float64, policyCode int, scen scenario, delta float64) 
 	score, _ := simulate(scen, allocation, policyCode)
 	diffs := make([][]float64, len(allocation))
 	wg := sync.WaitGroup{}
-	wg.Add(len(allocation) * len(allocation[0]))
+	wg.Add(len(allocation))
 	for i := range allocation {
 		diffs[i] = make([]float64, len(allocation[i]))
-		for j := range allocation[i] {
-			go func(indexI, indexJ int) {
-				diffs[indexI][indexJ] = diffWeightScore(indexI, indexJ, policyCode, delta, score, allocation, scen)
-				wg.Done()
-			}(i, j)
-		}
+		go func(indexI int) {
+			for j := range allocation[indexI] {
+				diffs[indexI][j] = diffWeightScore(indexI, j, policyCode, delta, score, allocation, scen)
+
+			}
+			wg.Done()
+		}(i)
 	}
 	wg.Wait()
-
 	return diffs
 }
 
 func diffWeightScore(indexX, indexY, policyCode int, delta, origScore float64, original [][]float64, scen scenario) float64 {
+
 	differential := copyMatrix(original)
 	differential[indexX][indexY] = delta + differential[indexX][indexY]
+	normalise(differential)
 	score, _ := simulate(scen, differential, policyCode)
 	diff := score - origScore
 	return diff / delta
