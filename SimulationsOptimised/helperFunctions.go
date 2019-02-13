@@ -1,11 +1,14 @@
 package main
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math"
 	"math/rand"
+	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -39,7 +42,7 @@ func scale(scalor float64, vector []float64) []float64 {
 
 func matScale(scalor float64, m [][]float64) [][]float64 {
 	for i := range m {
-		m[i] = scale(scalor,m[i])
+		m[i] = scale(scalor, m[i])
 	}
 	return m
 }
@@ -70,7 +73,7 @@ func vecAdd(v1, v2 []float64, add bool) []float64 {
 func matAdd(m1, m2 [][]float64, add bool) [][]float64 {
 	m3 := make([][]float64, len(m1))
 	for i := range m3 {
-		m3[i] = vecAdd(m1[i],m2[i],add)
+		m3[i] = vecAdd(m1[i], m2[i], add)
 	}
 	return m3
 
@@ -140,6 +143,35 @@ func readScenFromFile(file string) scenario {
 	var scen scenario
 	json.Unmarshal(bytes, &scen)
 	return scen
+}
+
+func writeScorestoCSV(scores []allocation, fileName string) {
+	output := make([][]string, len(scores))
+	for i, v := range scores {
+
+		output[i] = append([]string{fmt.Sprint(i), fmt.Sprint(v.score)}, allocsToString(v.fireAllocation)...)
+	}
+	file, _ := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY, 0777)
+	csvWrite := csv.NewWriter(file)
+	csvWrite.WriteAll(output)
+	csvWrite.Flush()
+	file.Close()
+}
+
+func allocsToString(matrix [][]float64) []string {
+	rows := len(matrix)
+	cols := len(matrix[0])
+	elements := make([]float64, rows*cols)
+	for i := 0; i < rows; i++ {
+		for j := 0; j < cols; j++ {
+			elements[i*cols+j] = matrix[i][j]
+		}
+	}
+	return []string{fmt.Sprint(rows), fmt.Sprint(cols), arrayToString(elements, ";")}
+}
+
+func arrayToString(a []float64, delim string) string {
+	return strings.Trim(strings.Replace(fmt.Sprint(a), " ", delim, -1), "[]")
 }
 
 func copyScen(original scenario) scenario {
@@ -216,6 +248,42 @@ func transpose(original [][]float64) [][]float64 {
 	return transposed
 }
 
+func normalise(original [][]float64) {
+	colSums := make([]float64, len(original[0]))
+	wg := sync.WaitGroup{}
+	wg.Add(len(colSums))
+	for i := range colSums {
+		go func(index int) {
+			colSums[index] = colSum(original, index)
+			if colSums[index] != 1 {
+				colDiv(original, index, colSums[index])
+			}
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
+}
+
+func colDiv(mat [][]float64, col int, divFactor float64) {
+	wg := sync.WaitGroup{}
+	wg.Add(len(mat))
+	for i := range mat {
+		go func(index int) {
+			mat[index][col] = mat[index][col] / divFactor
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
+}
+
+func colSum(mat [][]float64, col int) float64 {
+	sum := 0.0
+	for i := range mat {
+		sum += mat[i][col]
+	}
+	return sum
+}
+
 //Adapted from https://github.com/mxschmitt/golang-combinations
 func combs(inputs []float64) (combs []float64) {
 	length := uint(len(inputs))
@@ -267,7 +335,7 @@ func diff(allocation [][]float64, policyCode int, scen scenario, delta float64) 
 	score, _ := simulate(scen, allocation, policyCode)
 	diffs := make([][]float64, len(allocation))
 	wg := sync.WaitGroup{}
-	wg.Add(len(allocation)*len(allocation[0]))
+	wg.Add(len(allocation) * len(allocation[0]))
 	for i := range allocation {
 		diffs[i] = make([]float64, len(allocation[i]))
 		for j := range allocation[i] {

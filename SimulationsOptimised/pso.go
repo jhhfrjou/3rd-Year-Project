@@ -44,6 +44,7 @@ func indPso(currentWeight, pbestWeight, bestWeight, prevVelocity allocation, own
 	allBestVec := matScale(allBias*allBestRand, matAdd(bestWeight.fireAllocation, currentWeight.fireAllocation, false))
 	newV := matAdd(inertial, matAdd(ownBestVec, allBestVec, true), true)
 	newFireAlloc := matAdd(currentWeight.fireAllocation, newV, true)
+	normalise(newFireAlloc)
 	newFireScore, _ := simulate(scenario, newFireAlloc, 1)
 	return allocation{newV, -math.MaxFloat64}, allocation{newFireAlloc, newFireScore}
 }

@@ -1,13 +1,16 @@
 package main
 
-func hillClimb(iters int) []float64{
+func hillClimb(iters int, delta float64) []allocation {
 	scen := getBigDevelopingScenario()
 	alloc := getRandomWeight(scen)
-	scores := make([]float64,iters)
+	scores := make([]allocation, iters)
+	var diffs [][]float64
 	for i := range scores {
-		scores[i],_ = simulate(scen,alloc.fireAllocation,1)
-		diffs := diff(alloc.fireAllocation,1,scen,0.0001)
-		alloc.fireAllocation = matAdd(alloc.fireAllocation,diffs,true)
+		alloc.score, _ = simulate(scen, alloc.fireAllocation, 1)
+		scores[i] = copyAllocation(alloc)
+		diffs = diff(alloc.fireAllocation, 1, scen, delta)
+		alloc.fireAllocation = matAdd(alloc.fireAllocation, diffs, true)
+		normalise(alloc.fireAllocation)
 	}
 	return scores
 }
