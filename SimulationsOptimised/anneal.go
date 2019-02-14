@@ -7,6 +7,7 @@ import (
 
 func anneal(iters int, samples int) []allocation {
 	scenario := getBigDevelopingScenario()
+	var bestWeight allocation
 	weight := getRandomWeight(scenario)
 	weights := make([]allocation, iters)
 	oldScore, _ := simulate(scenario, weight.fireAllocation, 1)
@@ -20,6 +21,7 @@ func anneal(iters int, samples int) []allocation {
 			if newScore > oldScore {
 				oldScore = newScore
 				weight = allocation{newWeight, newScore}
+				bestWeight = weight
 			} else {
 				deltaScore := oldScore - newScore
 				chance := math.Exp(deltaScore / float64(iters-i))
@@ -32,5 +34,5 @@ func anneal(iters int, samples int) []allocation {
 		}
 		weights[i] = copyAllocation(weight)
 	}
-	return weights
+	return append(weights,bestWeight)
 }
