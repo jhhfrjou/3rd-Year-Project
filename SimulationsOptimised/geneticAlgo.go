@@ -9,7 +9,8 @@ import (
 
 var randomBool = new()
 
-func geneticAlgo(iters, samples int) allocation {
+func geneticAlgo(iters, samples int) []allocation {
+	bestWeights := make([]allocation, iters)
 	scenario := getBigDevelopingScenario()
 	gen := getRandomWeights(scenario, samples)
 	getScores(gen, scenario)
@@ -21,9 +22,10 @@ func geneticAlgo(iters, samples int) allocation {
 		if bestWeight.score < gen[0].score {
 			bestWeight = gen[0]
 		}
+		bestWeights[i] = copyAllocation(bestWeight)
 		gen = getNextGen(gen, 0.3)
 	}
-	return bestWeight
+	return bestWeights
 }
 
 func getNextGen(currentGen []allocation, mutateFactor float64) []allocation {

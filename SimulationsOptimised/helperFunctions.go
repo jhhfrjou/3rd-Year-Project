@@ -55,6 +55,9 @@ func vecAdd(v1, v2 []float64, add bool) []float64 {
 		for i := range v1 {
 			go func(index int) {
 				v3[index] = v1[index] + v2[index]
+				if v3[index] < 0 {
+					v3[index] = 0
+				}
 				wg.Done()
 			}(i)
 		}
@@ -62,6 +65,9 @@ func vecAdd(v1, v2 []float64, add bool) []float64 {
 		for i := range v1 {
 			go func(index int) {
 				v3[index] = v1[index] - v2[index]
+				if v3[index] < 0 {
+					v3[index] = 0
+				}
 				wg.Done()
 			}(i)
 		}
@@ -145,11 +151,13 @@ func readScenFromFile(file string) scenario {
 	return scen
 }
 
-func writeScorestoCSV(scores []allocation, fileName string) {
+func writeScorestoCSV(scores []allocation, fileName string, allocs bool) {
 	output := make([][]string, len(scores))
 	for i, v := range scores {
-
-		output[i] = append([]string{fmt.Sprint(i), fmt.Sprint(v.score)}, allocsToString(v.fireAllocation)...)
+		output[i] = []string{fmt.Sprint(i), fmt.Sprint(v.score)}
+		if allocs || i == len(scores) - 1 {
+			output[i] = append(output[i], allocsToString(v.fireAllocation)...)
+		}
 	}
 	file, _ := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY, 0777)
 	csvWrite := csv.NewWriter(file)
