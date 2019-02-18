@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 )
 
-func anneal(iters int, samples int) []allocation {
+func anneal(iters int, samples int, rate float64) []allocation {
 	scenario := getBigDevelopingScenario()
 	var bestWeight allocation
 	weight := getRandomWeight(scenario)
@@ -24,7 +25,7 @@ func anneal(iters int, samples int) []allocation {
 				bestWeight = weight
 			} else {
 				deltaScore := oldScore - newScore
-				chance := math.Exp(deltaScore / float64(iters-i))
+				chance := math.Exp(deltaScore * rate / float64(iters-i))
 				p := rand.Float64()
 				if chance > p {
 					oldScore = newScore
@@ -32,7 +33,10 @@ func anneal(iters int, samples int) []allocation {
 				}
 			}
 		}
-		weights[i] = copyAllocation(weight)
+		if i%100 == 0 {
+			fmt.Println(i) 
+		}
+		weights[i] = copyAllocation(bestWeight)
 	}
-	return append(weights,bestWeight)
+	return weights
 }
