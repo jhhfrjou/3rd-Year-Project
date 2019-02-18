@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 func ascend(iters int, delta, rate float64) []allocation {
 	scen := getBigDevelopingScenario()
 	alloc := getRandomWeight(scen)
@@ -11,9 +9,6 @@ func ascend(iters int, delta, rate float64) []allocation {
 		alloc.score, _ = simulate(scen, alloc.fireAllocation, 1)
 		scores[i] = copyAllocation(alloc)
 		diffs = diff(alloc.fireAllocation, 1, scen, delta)
-		if i == 999 {
-			fmt.Println(diffs)
-		}
 		alloc.fireAllocation = matAdd(alloc.fireAllocation, matScale(rate, diffs), true)
 		normalise(alloc.fireAllocation)
 	}

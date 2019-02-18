@@ -1,12 +1,12 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
-	bestWeight := geneticAlgo(100, 100)
-	for _, v := range bestWeight {
-		fmt.Println(v)
+	scores := make([][]allocation,3)
+	for i := range scores {
+		scores[i] = ascend(100, 0.00000001, 0.00001)
+		fmt.Println("ascent complete", i)
 	}
+	writeManyToCSV(scores, "manyGradients.csv")
 }
