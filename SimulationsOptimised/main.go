@@ -3,9 +3,9 @@ package main
 import "fmt"
 
 func main() {
-	scores := make([][]allocation,3)
+	scores := make([][]allocation, 10)
 	for i := range scores {
-		scores[i] = ascend(100, 0.00000001, 0.00001)
+		scores[i] = ascend(1000, 0.00000001, 0.00001)
 		fmt.Println("ascent complete", i)
 	}
 	writeManyToCSV(scores, "manyGradients.csv")
