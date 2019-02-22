@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"time"
 )
 
 func anneal(iters int, samples int, rate float64) []allocation {
@@ -13,7 +14,9 @@ func anneal(iters int, samples int, rate float64) []allocation {
 	weights := make([]allocation, iters)
 	oldScore, _ := simulate(scenario, weight.fireAllocation, 1)
 	r := new()
+	var rec time.Duration
 	for i := range weights {
+		start := time.Now()
 		for j := 0; j < samples; j++ {
 			deltaWeight := matScale(0.1, getRandomWeight(scenario).fireAllocation)
 			newWeight := matAdd(weight.fireAllocation, deltaWeight, r.Bool())
@@ -22,9 +25,11 @@ func anneal(iters int, samples int, rate float64) []allocation {
 			if newScore > oldScore {
 				oldScore = newScore
 				weight = allocation{newWeight, newScore}
-				bestWeight = weight
+				if newScore > bestWeight.score {
+					bestWeight = copyAllocation(weight)
+				}
 			} else {
-				deltaScore := oldScore - newScore
+				deltaScore := newScore - oldScore
 				chance := math.Exp(deltaScore * rate / float64(iters-i))
 				p := rand.Float64()
 				if chance > p {
@@ -33,9 +38,9 @@ func anneal(iters int, samples int, rate float64) []allocation {
 				}
 			}
 		}
-		if i%100 == 0 {
-			fmt.Println(i) 
-		}
+		rec = time.Since(start)
+		fmt.Println(rec)
+		fmt.Println(bestWeight.score)
 		weights[i] = copyAllocation(bestWeight)
 	}
 	return weights

@@ -1,12 +1,22 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 func main() {
-	scores := make([][]allocation, 10)
+	scores := make([][]allocation, 40)
+	wg := sync.WaitGroup{}
+	wg.Add(len(scores))
 	for i := range scores {
-		scores[i] = anneal(1000, 100, 0.1)
-		fmt.Println("ascent complete", i)
+		go func(index int) {
+			scores[index] = anneal(10000, 1000, 0.1*float64(index+1))
+			fmt.Println("ascent complete", index)
+			wg.Done()
+		}(i)
 	}
-	writeManyToCSV(scores, "man.csv")
+	wg.Wait()
+	//writeManyToCSV(scores, "annneals.csv")
+
 }
