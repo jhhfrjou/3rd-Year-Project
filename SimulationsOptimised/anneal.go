@@ -7,8 +7,7 @@ import (
 	"time"
 )
 
-func anneal(iters int, samples int, rate float64) []allocation {
-	scenario := getBigDevelopingScenario()
+func anneal(iters int, samples int, rate float64, scenario scenario) []allocation {
 	var bestWeight allocation
 	weight := getRandomWeight(scenario)
 	weights := make([]allocation, iters)

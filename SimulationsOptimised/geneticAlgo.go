@@ -9,9 +9,8 @@ import (
 
 var randomBool = new()
 
-func geneticAlgo(iters, samples int) []allocation {
+func geneticAlgo(iters, samples int, scenario scenario) []allocation {
 	bestWeights := make([]allocation, iters)
-	scenario := getBigDevelopingScenario()
 	gen := getRandomWeights(scenario, samples)
 	getScores(gen, scenario)
 	bestWeight := gen[0]
@@ -23,7 +22,7 @@ func geneticAlgo(iters, samples int) []allocation {
 			bestWeight = gen[0]
 		}
 		bestWeights[i] = copyAllocation(bestWeight)
-		gen = getNextGen(gen, 0.3)
+		gen = getNextGen(gen, 0.8)
 	}
 	return bestWeights
 }
@@ -35,7 +34,7 @@ func getNextGen(currentGen []allocation, mutateFactor float64) []allocation {
 	wg.Add(numSample)
 	for i := 0; i < numSample; i++ {
 		go func(index int) {
-			if index < 10 {
+			if index < len(currentGen) /10 {
 				nextGen[index] = currentGen[index]
 			} else {
 				i1 := rand.Intn(numSample / 2)
@@ -93,7 +92,12 @@ func mutate(w [][]float64, mutateFactor float64) [][]float64 {
 	for i, vec := range transposed {
 		for j := range vec {
 			if rand.Float64() < mutateFactor {
-				transposed[i][j] = rand.Float64()
+				if rand.Float64() < 0.3 {
+					transposed[i][j] = rand.Float64()
+				} else {
+					transposed[i][j] = 0
+				}
+
 			}
 		}
 		sumed = sum(transposed[i])

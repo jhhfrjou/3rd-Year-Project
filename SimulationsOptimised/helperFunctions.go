@@ -102,12 +102,12 @@ func getRandomScenario(rSize, bSize int) scenario {
 	r := make([]float64, rSize)
 	b := make([]float64, bSize)
 	for i := 0; i < rSize; i++ {
-		r[i] = float64(rand.Intn(40) + 10)
+		r[i] = float64(rand.Intn(400) + 10)
 		kB[i] = make([]float64, bSize)
 		for j := 0; j < bSize; j++ {
 			if i == 0 {
 				kR[j] = make([]float64, rSize)
-				b[j] = float64(rand.Intn(20) + 10)
+				b[j] = float64(rand.Intn(300) + 10)
 
 			}
 			kR[j][i] = rand.Float64()
@@ -155,7 +155,7 @@ func writeScorestoCSV(scores []allocation, fileName string, allocs bool) {
 	output := make([][]string, len(scores))
 	for i, v := range scores {
 		output[i] = []string{fmt.Sprint(i), fmt.Sprint(v.score)}
-		if allocs || i == len(scores) - 1 {
+		if allocs || i == len(scores)-1 {
 			output[i] = append(output[i], allocsToString(v.fireAllocation)...)
 		}
 	}
@@ -170,13 +170,13 @@ func writeManyToCSV(scores [][]allocation, fileName string) {
 	file, _ := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY, 0777)
 	output := make([][]string, len(scores[0]))
 	for i := range scores[0] {
-		output[i] = make([]string,len(scores))
+		output[i] = make([]string, len(scores))
 		for j := range scores {
 			output[i][j] = fmt.Sprint(scores[j][i].score)
 		}
 	}
 	csvWriter := csv.NewWriter(file)
-	csvWriter.WriteAll(output)	
+	csvWriter.WriteAll(output)
 	csvWriter.Flush()
 	file.Close()
 }
@@ -250,9 +250,13 @@ func getRandomWeights(scenario scenario, sampleSize int) []allocation {
 }
 
 func getRandomVector(num int) []float64 {
-	samples := []float64{}
+	samples := make([]float64, num)
 	for i := 0; i < num; i++ {
-		samples = append(samples, rand.Float64())
+		if rand.Float64() < 0.3 {
+			samples[i] = 0
+		} else {
+			samples[i] = rand.Float64()
+		}
 	}
 	sumed := sum(samples)
 	return scale(1.0/sumed, samples)

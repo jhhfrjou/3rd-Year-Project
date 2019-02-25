@@ -2,21 +2,14 @@ package main
 
 import (
 	"fmt"
-	"sync"
+	"time"
 )
 
 func main() {
-	scores := make([][]allocation, 40)
-	wg := sync.WaitGroup{}
-	wg.Add(len(scores))
-	for i := range scores {
-		go func(index int) {
-			scores[index] = anneal(10000, 1000, 0.1*float64(index+1))
-			fmt.Println("ascent complete", index)
-			wg.Done()
-		}(i)
-	}
-	wg.Wait()
-	//writeManyToCSV(scores, "annneals.csv")
-
+	scen := readScenFromFile("scenJsons/4thTest.json")
+	iters := 10000
+	timeOut, _ := time.ParseDuration("20m")
+	allocs, timeOuted := hillClimb(iters, scen, timeOut)
+	fmt.Println(timeOuted)
+	prettyPrintAllocation(allocs[len(allocs)-1])
 }

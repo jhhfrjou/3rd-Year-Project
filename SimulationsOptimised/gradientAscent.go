@@ -1,7 +1,6 @@
 package main
 
-func ascend(iters int, delta, rate float64) []allocation {
-	scen := getBigDevelopingScenario()
+func ascend(iters int, delta, rate float64, scen scenario) []allocation {
 	alloc := getRandomWeight(scen)
 	scores := make([]allocation, iters)
 	var diffs [][]float64

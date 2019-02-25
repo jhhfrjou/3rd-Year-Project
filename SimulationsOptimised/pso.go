@@ -6,13 +6,12 @@ import (
 	"sync"
 )
 
-func pso(iters, samples int) []allocation {
-	scenario := getBigDevelopingScenario()
+func pso(iters, samples int, scenario scenario) []allocation {
 	currentWeights := getRandomWeights(scenario, samples)
 	bestWeight := getRandomWeight(scenario)
 	bestWeights := getRandomWeights(scenario, samples)
 	prevVelocity := getRandomWeights(scenario, samples)
-	progression := make([]allocation,iters)
+	progression := make([]allocation, iters)
 	wg := sync.WaitGroup{}
 
 	ownBestBias := 0.01
