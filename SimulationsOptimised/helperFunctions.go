@@ -151,6 +151,14 @@ func readScenFromFile(file string) scenario {
 	return scen
 }
 
+func getAllScenariosFromFile(folder string) (scens []scenario) {
+	files, _ := ioutil.ReadDir(folder)
+	for _, v := range files {
+		scens = append(scens, readScenFromFile(folder+"/"+v.Name()))
+	}
+	return
+}
+
 func writeScorestoCSV(scores []allocation, fileName string, allocs bool) {
 	output := make([][]string, len(scores))
 	for i, v := range scores {
@@ -259,7 +267,10 @@ func getRandomVector(num int) []float64 {
 		}
 	}
 	sumed := sum(samples)
-	return scale(1.0/sumed, samples)
+	if sumed != 0.0 && sumed != 1.0 {
+		samples = scale(1.0/sumed, samples)
+	}
+		return samples
 }
 
 func transpose(original [][]float64) [][]float64 {
@@ -282,7 +293,7 @@ func normalise(original [][]float64) {
 	for i := range colSums {
 		go func(index int) {
 			colSums[index] = colSum(original, index)
-			if colSums[index] != 1 {
+			if colSums[index] != 1 && colSums[index] != 0 {
 				colDiv(original, index, colSums[index])
 			}
 			wg.Done()
@@ -375,6 +386,10 @@ func diff(allocation [][]float64, policyCode int, scen scenario, delta float64) 
 	}
 	wg.Wait()
 	return diffs
+}
+
+func logistic(x, x0 int, growthRate float64) float64 {
+	return 0.000001 + (0.01 / (1 + math.Exp(-growthRate*float64(x0-x))))
 }
 
 func diffWeightScore(indexX, indexY, policyCode int, delta, origScore float64, original [][]float64, scen scenario) float64 {
