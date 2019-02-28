@@ -1,6 +1,8 @@
 package main
 
-import matrix "github.com/skelterjohn/go.matrix"
+import (
+	matrix "github.com/skelterjohn/go.matrix"
+)
 
 /*
 	Policy
@@ -59,7 +61,7 @@ func enemyEqualSplit(factors [][]float64, own []float64) *matrix.DenseMatrix {
 func alterFactors(friendlyKill, weights [][]float64) *matrix.DenseMatrix {
 	altered := [][]float64{}
 	for i := range weights {
-		row := make([]float64,len(weights[i]))
+		row := make([]float64, len(weights[i]))
 		for j := range weights[i] {
 			row[j] = friendlyKill[i][j] * weights[i][j]
 		}

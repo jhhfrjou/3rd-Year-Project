@@ -270,7 +270,7 @@ func getRandomVector(num int) []float64 {
 	if sumed != 0.0 && sumed != 1.0 {
 		samples = scale(1.0/sumed, samples)
 	}
-		return samples
+	return samples
 }
 
 func transpose(original [][]float64) [][]float64 {
@@ -293,8 +293,10 @@ func normalise(original [][]float64) {
 	for i := range colSums {
 		go func(index int) {
 			colSums[index] = colSum(original, index)
-			if colSums[index] != 1 && colSums[index] != 0 {
+			if colSums[index] != 0 {
 				colDiv(original, index, colSums[index])
+			} else {
+				original[rand.Intn(len(original))][index] = 1
 			}
 			wg.Done()
 		}(i)

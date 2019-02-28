@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"sort"
 	"sync"
+	"time"
 )
 
 var randomBool = new()
@@ -18,7 +19,7 @@ func geneticAlgo(iters, samples int, scenario scenario) []allocation {
 func geneticAlgoS(iters, samples int, scenario scenario, alloc allocation) []allocation {
 	gen := make([]allocation, samples)
 	gen[0] = alloc
-	for i := 1; i< samples; i++ {
+	for i := 1; i < samples; i++ {
 		gen[i] = allocation{mutate(alloc.fireAllocation, 0.1), -math.MaxFloat64}
 	}
 	return geneticAlgoAllocs(iters, samples, scenario, gen)
@@ -27,7 +28,9 @@ func geneticAlgoS(iters, samples int, scenario scenario, alloc allocation) []all
 
 func geneticAlgoAllocs(iters, samples int, scenario scenario, gen []allocation) []allocation {
 	bestWeights := make([]allocation, iters)
+	start := time.Now()
 	getScores(gen, scenario)
+	fmt.Println(time.Since(start))
 	fmt.Println("initial Scores")
 	bestWeight := gen[0]
 	for i := 0; i < iters; i++ {
@@ -90,39 +93,38 @@ func getScores(samples []allocation, scenario scenario) float64 {
 }
 
 func crossOver(p1, p2 [][]float64) [][]float64 {
-	child := make([][]float64, len(p1[0]))
-	sumed := 0.0
-	for j := range p1[0] {
-		child[j] = make([]float64, len(p1))
-		for i := range p1 {
+	child := make([][]float64, len(p1))
+	for i := range p1 {
+		child[i] = make([]float64, len(p1[0]))
+		for j := range p1 {
 			if randomBool.Bool() {
-				child[j][i] = p1[i][j]
+				child[i][j] = p1[i][j]
 			} else {
-				child[j][i] = p2[i][j]
+				child[i][j] = p2[i][j]
 			}
 		}
-		sumed = sum(child[j])
-		child[j] = scale(1.0/sumed, child[j])
 	}
-	return transpose(child)
+	normalise(child)
+	return child
 }
 
 func mutate(w [][]float64, mutateFactor float64) [][]float64 {
-	transposed := transpose(w)
-	sumed := 0.0
-	for i, vec := range transposed {
+	for i, vec := range w {
 		for j := range vec {
 			if rand.Float64() < mutateFactor {
-				if rand.Float64() < 0.3 {
-					transposed[i][j] = rand.Float64()
+				if rand.Float64() < 0.5 {
+					w[i][j] = rand.Float64()
 				} else {
-					transposed[i][j] = 0
+					if randomBool.Bool() {
+						w[i][j] = 0
+					} else {
+						w[i][j] = 1
+					}
 				}
 
 			}
 		}
-		sumed = sum(transposed[i])
-		transposed[i] = scale(1.0/sumed, transposed[i])
 	}
-	return transpose(transposed)
+	normalise(w)
+	return w
 }
