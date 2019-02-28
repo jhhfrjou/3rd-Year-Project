@@ -37,6 +37,7 @@ func singleScen(scen scenario) {
 	allocs = geneticAlgoS(iters, 10000, scen, allocs[len(allocs)-1])
 	fmt.Println("Genetic")
 	prettyPrintAllocation(allocs[len(allocs)-1])
+	writeScorestoCSV(allocs, "genetic.csv", true)
 	/*timeO, _ := time.ParseDuration("5m")
 	allocs, _ = hillClimb(iters, scen, timeO)
 	fmt.Println("Hill Climb")
