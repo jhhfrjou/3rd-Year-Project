@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"sync"
-	"time"
 )
 
 func main() {
@@ -28,14 +28,18 @@ func allScens() {
 
 func singleScen(scen scenario) {
 	iters := 1000
-	allocs := anneal(iters, 100, 50, scen)
+	/*allocs := anneal(iters, 100, 50, scen)
+	fmt.Println("Anneal")
+	prettyPrintAllocation(allocs[len(allocs)-1])*/
+	allocs := ascend(iters, 0.0001, 0.0001, scen)
+	fmt.Println("Ascend")
 	prettyPrintAllocation(allocs[len(allocs)-1])
-	allocs = ascend(iters, 0.0001, 0.0001, scen)
+	allocs = geneticAlgoS(iters, 10000, scen, allocs[len(allocs)-1])
+	fmt.Println("Genetic")
 	prettyPrintAllocation(allocs[len(allocs)-1])
-	allocs = geneticAlgo(iters, 1000, scen)
-	prettyPrintAllocation(allocs[len(allocs)-1])
-	timeO, _ := time.ParseDuration("5m")
+	/*timeO, _ := time.ParseDuration("5m")
 	allocs, _ = hillClimb(iters, scen, timeO)
-	prettyPrintAllocation(allocs[len(allocs)-1])
+	fmt.Println("Hill Climb")
+	prettyPrintAllocation(allocs[len(allocs)-1])*/
 
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"math/rand"
 	"sort"
@@ -10,11 +11,29 @@ import (
 var randomBool = new()
 
 func geneticAlgo(iters, samples int, scenario scenario) []allocation {
-	bestWeights := make([]allocation, iters)
 	gen := getRandomWeights(scenario, samples)
+	return geneticAlgoAllocs(iters, samples, scenario, gen)
+}
+
+func geneticAlgoS(iters, samples int, scenario scenario, alloc allocation) []allocation {
+	gen := make([]allocation, samples)
+	gen[0] = alloc
+	for i := 1; i< samples; i++ {
+		gen[i] = allocation{mutate(alloc.fireAllocation, 0.1), -math.MaxFloat64}
+	}
+	return geneticAlgoAllocs(iters, samples, scenario, gen)
+
+}
+
+func geneticAlgoAllocs(iters, samples int, scenario scenario, gen []allocation) []allocation {
+	bestWeights := make([]allocation, iters)
 	getScores(gen, scenario)
+	fmt.Println("initial Scores")
 	bestWeight := gen[0]
 	for i := 0; i < iters; i++ {
+		if i%100 == 0 {
+			fmt.Println(i, bestWeight.score)
+		}
 		sort.Slice(gen, func(i, j int) bool {
 			return gen[i].score > gen[j].score
 		})
@@ -22,23 +41,25 @@ func geneticAlgo(iters, samples int, scenario scenario) []allocation {
 			bestWeight = gen[0]
 		}
 		bestWeights[i] = copyAllocation(bestWeight)
-		gen = getNextGen(gen, 0.8)
+		gen = getNextGen(gen, 0.8, scenario)
 	}
 	return bestWeights
 }
 
-func getNextGen(currentGen []allocation, mutateFactor float64) []allocation {
+func getNextGen(currentGen []allocation, mutateFactor float64, scenario scenario) []allocation {
 	numSample := len(currentGen)
 	nextGen := make([]allocation, numSample)
 	wg := sync.WaitGroup{}
 	wg.Add(numSample)
 	for i := 0; i < numSample; i++ {
 		go func(index int) {
-			if index < len(currentGen) /10 {
+			if index < len(currentGen)/10 {
 				nextGen[index] = currentGen[index]
+			} else if index > len(currentGen)/2 {
+				nextGen[index] = getRandomWeight(scenario)
 			} else {
-				i1 := rand.Intn(numSample / 2)
-				i2 := rand.Intn(numSample / 2)
+				i1 := rand.Intn(index)
+				i2 := rand.Intn(index)
 				child := crossOver(currentGen[i1].fireAllocation, currentGen[i2].fireAllocation)
 				child = mutate(child, mutateFactor)
 				nextGen[index] = allocation{child, -math.MaxFloat64}
