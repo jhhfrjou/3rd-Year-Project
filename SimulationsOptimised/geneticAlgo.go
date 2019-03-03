@@ -11,40 +11,43 @@ import (
 
 var randomBool = new()
 
-func geneticAlgo(iters, samples int, scenario scenario) []allocation {
+func geneticAlgo(iters, samples int, scenario scenario, mutateFactor float64) []allocation {
 	gen := getRandomWeights(scenario, samples)
-	return geneticAlgoAllocs(iters, samples, scenario, gen)
+	return geneticAlgoAllocs(iters, samples, scenario, gen, mutateFactor)
 }
 
-func geneticAlgoS(iters, samples int, scenario scenario, alloc allocation) []allocation {
+func geneticAlgoS(iters, samples int, scenario scenario, alloc allocation, mutateFactor float64) []allocation {
 	gen := make([]allocation, samples)
-	gen[0] = alloc
+	gen[0] = copyAllocation(alloc)
 	for i := 1; i < samples; i++ {
-		gen[i] = allocation{mutate(alloc.fireAllocation, 0.1), -math.MaxFloat64}
+		gen[i] = copyAllocation(alloc)
+		mutate(gen[i].FireAllocation, mutateFactor, scenario)
+		gen[i].Score = -math.MaxFloat64
 	}
-	return geneticAlgoAllocs(iters, samples, scenario, gen)
+	return geneticAlgoAllocs(iters, samples, scenario, gen, mutateFactor)
 
 }
 
-func geneticAlgoAllocs(iters, samples int, scenario scenario, gen []allocation) []allocation {
+func geneticAlgoAllocs(iters, samples int, scenario scenario, gen []allocation, mutateFactor float64) []allocation {
 	bestWeights := make([]allocation, iters)
-	start := time.Now()
 	getScores(gen, scenario)
-	fmt.Println(time.Since(start))
 	fmt.Println("initial Scores")
 	bestWeight := gen[0]
 	for i := 0; i < iters; i++ {
-		if i%100 == 0 {
-			fmt.Println(i, bestWeight.score)
-		}
-		sort.Slice(gen, func(i, j int) bool {
-			return gen[i].score > gen[j].score
+		sort.SliceStable(gen, func(i, j int) bool {
+			return gen[i].Score > gen[j].Score
 		})
-		if bestWeight.score < gen[0].score {
+		if i%10 == 0 {
+			j := rand.Intn(samples)
+			fmt.Println("Iter: ", i, " Best: ", gen[0].Score, "Rand: ", j, gen[j].Score, "Worst", gen[samples-1].Score)
+		}
+		if bestWeight.Score < gen[0].Score {
 			bestWeight = gen[0]
 		}
 		bestWeights[i] = copyAllocation(bestWeight)
-		gen = getNextGen(gen, 0.8, scenario)
+		//start := time.Now()
+		gen = getNextGen(gen, mutateFactor, scenario)
+		//fmt.Println(time.Since(start))
 	}
 	return bestWeights
 }
@@ -54,77 +57,82 @@ func getNextGen(currentGen []allocation, mutateFactor float64, scenario scenario
 	nextGen := make([]allocation, numSample)
 	wg := sync.WaitGroup{}
 	wg.Add(numSample)
+	overCount := 0
+	pool := int(float64(numSample) * 0.3)
+
 	for i := 0; i < numSample; i++ {
 		go func(index int) {
-			if index < len(currentGen)/10 {
+			if index < 3 {
 				nextGen[index] = currentGen[index]
-			} else if index > len(currentGen)/2 {
-				nextGen[index] = getRandomWeight(scenario)
+			} else if index < 6 {
+				nextGen[index] = copyAllocation(currentGen[index-3])
+				mutate(nextGen[index].FireAllocation, mutateFactor, scenario)
+				nextGen[index].Score, _ = simulate(scenario, nextGen[index].FireAllocation, 1)
 			} else {
-				i1 := rand.Intn(index)
-				i2 := rand.Intn(index)
-				child := crossOver(currentGen[i1].fireAllocation, currentGen[i2].fireAllocation)
-				child = mutate(child, mutateFactor)
+				i1, i2 := rand.Intn(pool), rand.Intn(pool)
+				child := crossOver(currentGen[i1].FireAllocation, currentGen[i2].FireAllocation)
+				mutate(child, mutateFactor, scenario)
 				nextGen[index] = allocation{child, -math.MaxFloat64}
+				var count int
+				nextGen[index].Score, count = simulate(scenario, child, 1)
+				if count > 50000 {
+					overCount++
+					//fmt.Println(nextGen[index].Score, count)
+				}
 			}
 			wg.Done()
 		}(i)
 	}
 	wg.Wait()
+	fmt.Println("OverCounts: ", overCount)
 	return nextGen
 }
 
-func getScores(samples []allocation, scenario scenario) float64 {
+func getScores(samples []allocation, scenario scenario) {
+	start := time.Now()
 	wg := sync.WaitGroup{}
 	wg.Add(len(samples))
+
+	overCount := 0
 	for i := 0; i < len(samples); i++ {
 		go func(index int) {
-			samples[index].score, _ = simulate(scenario, samples[index].fireAllocation, 1)
+			var count int
+			samples[index].Score, count = simulate(scenario, samples[index].FireAllocation, 1)
+			if count > 50000 {
+				overCount++
+				fmt.Println(samples[index].Score)
+			}
 			wg.Done()
 		}(i)
 	}
 	wg.Wait()
-	sum := 0.0
-	for _, v := range samples {
-		sum += v.score
-	}
-	return sum
-
+	fmt.Println("OverCounts :", overCount)
+	fmt.Println(time.Since(start))
 }
 
 func crossOver(p1, p2 [][]float64) [][]float64 {
-	child := make([][]float64, len(p1))
-	for i := range p1 {
-		child[i] = make([]float64, len(p1[0]))
-		for j := range p1 {
-			if randomBool.Bool() {
-				child[i][j] = p1[i][j]
-			} else {
-				child[i][j] = p2[i][j]
+	child := make([][]float64, len(p1[0]))
+	p1T := transpose(p1)
+	p2T := transpose(p2)
+	for i := range p1T {
+		child[i] = make([]float64, len(p1))
+		if randomBool.Bool() {
+			for j := range p1T[i] {
+				child[i][j] = (p1T[i][j] + p2T[i][j]) / 2
 			}
+		} else if randomBool.Bool() {
+			copy(child[i], p2T[i])
+		} else {
+			copy(child[i], p1T[i])
 		}
 	}
-	normalise(child)
-	return child
+	return transpose(child)
 }
 
-func mutate(w [][]float64, mutateFactor float64) [][]float64 {
-	for i, vec := range w {
-		for j := range vec {
-			if rand.Float64() < mutateFactor {
-				if rand.Float64() < 0.5 {
-					w[i][j] = rand.Float64()
-				} else {
-					if randomBool.Bool() {
-						w[i][j] = 0
-					} else {
-						w[i][j] = 1
-					}
-				}
-
-			}
-		}
+func mutate(w [][]float64, mutateFactor float64, scen scenario) {
+	if rand.Float64() < mutateFactor {
+		add := matScale(logistic(rand.Intn(32000), 16000, 50), getRandomWeight(scen).FireAllocation)
+		w = matAdd(w, add, randomBool.Bool())
 	}
 	normalise(w)
-	return w
 }

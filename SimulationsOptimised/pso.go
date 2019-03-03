@@ -21,9 +21,9 @@ func pso(iters, samples int, scenario scenario) []allocation {
 		for j := 0; j < samples; j++ {
 			go func(thatLoop int) {
 				prevVelocity[thatLoop], currentWeights[thatLoop] = indPso(currentWeights[thatLoop], bestWeights[thatLoop], bestWeight, prevVelocity[thatLoop], ownBestBias, allBestBias, i, iters, scenario)
-				if currentWeights[thatLoop].score > bestWeights[thatLoop].score {
+				if currentWeights[thatLoop].Score > bestWeights[thatLoop].Score {
 					bestWeights[thatLoop] = copyAllocation(currentWeights[thatLoop])
-					if currentWeights[thatLoop].score > bestWeight.score {
+					if currentWeights[thatLoop].Score > bestWeight.Score {
 						bestWeight = bestWeights[thatLoop]
 					}
 				}
@@ -40,11 +40,11 @@ func indPso(currentWeight, pbestWeight, bestWeight, prevVelocity allocation, own
 	ownBestRand := rand.Float64()
 	allBestRand := rand.Float64()
 	inertia := float64(totalIters-iter) * 0.00001
-	inertial := matScale(inertia, prevVelocity.fireAllocation)
-	ownBestVec := matScale(ownBias*ownBestRand, matAdd(pbestWeight.fireAllocation, currentWeight.fireAllocation, false))
-	allBestVec := matScale(allBias*allBestRand, matAdd(bestWeight.fireAllocation, currentWeight.fireAllocation, false))
+	inertial := matScale(inertia, prevVelocity.FireAllocation)
+	ownBestVec := matScale(ownBias*ownBestRand, matAdd(pbestWeight.FireAllocation, currentWeight.FireAllocation, false))
+	allBestVec := matScale(allBias*allBestRand, matAdd(bestWeight.FireAllocation, currentWeight.FireAllocation, false))
 	newV := matAdd(inertial, matAdd(ownBestVec, allBestVec, true), true)
-	newFireAlloc := matAdd(currentWeight.fireAllocation, newV, true)
+	newFireAlloc := matAdd(currentWeight.FireAllocation, newV, true)
 	normalise(newFireAlloc)
 	newFireScore, _ := simulate(scenario, newFireAlloc, 1)
 	return allocation{newV, -math.MaxFloat64}, allocation{newFireAlloc, newFireScore}

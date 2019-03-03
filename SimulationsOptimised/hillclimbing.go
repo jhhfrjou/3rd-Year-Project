@@ -10,7 +10,7 @@ func hillClimb(iters int, scen scenario, timeOut time.Duration) ([]allocation, b
 	var better bool
 	randomBool := new()
 	alloc := getRandomWeight(scen)
-	alloc.score, _ = simulate(scen, alloc.fireAllocation, 1)
+	alloc.Score, _ = simulate(scen, alloc.FireAllocation, 1)
 	start := time.Now()
 	var timer time.Duration
 	i := 0
@@ -19,18 +19,18 @@ func hillClimb(iters int, scen scenario, timeOut time.Duration) ([]allocation, b
 	for i < iters && time.Since(start) < timeOut {
 		loopTimer := time.Now()
 		if i%100 == 0 {
-			fmt.Println(i, avgStep/100, j, alloc.score, timer)
+			fmt.Println(i, avgStep/100, j, alloc.Score, timer)
 		}
 		j = 0
 		better = false
 		for !better && time.Since(start) < timeOut {
-			add := matScale(logistic(j, 10000, 1), getRandomWeight(scen).fireAllocation)
-			newAllocs := matAdd(alloc.fireAllocation, add, randomBool.Bool())
+			add := matScale(logistic(j, 10000, 1), getRandomWeight(scen).FireAllocation)
+			newAllocs := matAdd(alloc.FireAllocation, add, randomBool.Bool())
 			normalise(newAllocs)
 			score, _ := simulate(scen, newAllocs, 1)
-			if score > alloc.score {
-				alloc.fireAllocation = newAllocs
-				alloc.score = score
+			if score > alloc.Score {
+				alloc.FireAllocation = newAllocs
+				alloc.Score = score
 				better = true
 			}
 

@@ -5,11 +5,11 @@ func ascend(iters int, delta, rate float64, scen scenario) []allocation {
 	scores := make([]allocation, iters)
 	var diffs [][]float64
 	for i := range scores {
-		alloc.score, _ = simulate(scen, alloc.fireAllocation, 1)
+		alloc.Score, _ = simulate(scen, alloc.FireAllocation, 1)
 		scores[i] = copyAllocation(alloc)
-		diffs = diff(alloc.fireAllocation, 1, scen, delta)
-		alloc.fireAllocation = matAdd(alloc.fireAllocation, matScale(rate, diffs), true)
-		normalise(alloc.fireAllocation)
+		diffs = diff(alloc.FireAllocation, 1, scen, delta)
+		alloc.FireAllocation = matAdd(alloc.FireAllocation, matScale(rate, diffs), true)
+		normalise(alloc.FireAllocation)
 	}
 	return scores
 }

@@ -18,6 +18,8 @@ func simulate(orig scenario, allocation [][]float64, policyCode int) (float64, i
 	count := 0
 	r := matrix.MakeDenseMatrix(scenario.R, len(scenario.R), 1)
 	b := matrix.MakeDenseMatrix(scenario.B, len(scenario.B), 1)
+	var dB matrix.Matrix
+	var dR matrix.Matrix
 	var alteredConsts *matrix.DenseMatrix
 	var alteredEnemy *matrix.DenseMatrix
 	if policyCode == 1 {
@@ -32,8 +34,8 @@ func simulate(orig scenario, allocation [][]float64, policyCode int) (float64, i
 			alteredConsts = alterFactors(scenario.KR, allocation)
 			alteredEnemy = enemyEqualSplit(scenario.KB, scenario.R)
 		}
-		dB, _ := alteredConsts.Times(r)
-		dR, _ := alteredEnemy.Times(b)
+		dB, _ = alteredConsts.Times(r)
+		dR, _ = alteredEnemy.Times(b)
 		dB.Scale(0.001)
 		dR.Scale(0.001)
 		r.Subtract(dR)
@@ -43,7 +45,7 @@ func simulate(orig scenario, allocation [][]float64, policyCode int) (float64, i
 		count++
 	}
 
-	return sum(scenario.R), count
+	return sum(scenario.R) - sum(scenario.B), count
 }
 
 func enemyEqualSplit(factors [][]float64, own []float64) *matrix.DenseMatrix {

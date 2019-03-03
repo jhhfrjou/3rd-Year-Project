@@ -21,8 +21,8 @@ type scenario struct {
 }
 
 type allocation struct {
-	fireAllocation [][]float64
-	score          float64
+	FireAllocation [][]float64
+	Score          float64
 }
 
 var bigScen scenario
@@ -151,6 +151,18 @@ func readScenFromFile(file string) scenario {
 	return scen
 }
 
+func writeAlloctoFile(alloc allocation, file string) {
+	bytes, _ := json.MarshalIndent(alloc, "", " ")
+	ioutil.WriteFile(file, bytes, 0644)
+}
+
+func readAllocFromFile(file string) allocation {
+	bytes, _ := ioutil.ReadFile(file)
+	var alloc allocation
+	json.Unmarshal(bytes, &alloc)
+	return alloc
+}
+
 func getAllScenariosFromFile(folder string) (scens []scenario) {
 	files, _ := ioutil.ReadDir(folder)
 	for _, v := range files {
@@ -162,9 +174,9 @@ func getAllScenariosFromFile(folder string) (scens []scenario) {
 func writeScorestoCSV(scores []allocation, fileName string, allocs bool) {
 	output := make([][]string, len(scores))
 	for i, v := range scores {
-		output[i] = []string{fmt.Sprint(i), fmt.Sprint(v.score)}
+		output[i] = []string{fmt.Sprint(i), fmt.Sprint(v.Score)}
 		if allocs || i == len(scores)-1 {
-			output[i] = append(output[i], allocsToString(v.fireAllocation)...)
+			output[i] = append(output[i], allocsToString(v.FireAllocation)...)
 		}
 	}
 	file, _ := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY, 0777)
@@ -180,7 +192,7 @@ func writeManyToCSV(scores [][]allocation, fileName string) {
 	for i := range scores[0] {
 		output[i] = make([]string, len(scores))
 		for j := range scores {
-			output[i][j] = fmt.Sprint(scores[j][i].score)
+			output[i][j] = fmt.Sprint(scores[j][i].Score)
 		}
 	}
 	csvWriter := csv.NewWriter(file)
@@ -229,14 +241,14 @@ func prettyPrintScen(scenario scenario) {
 }
 
 func copyAllocation(original allocation) allocation {
-	fireDis := copyMatrix(original.fireAllocation)
-	return allocation{fireDis, original.score}
+	fireDis := copyMatrix(original.FireAllocation)
+	return allocation{fireDis, original.Score}
 }
 
 func prettyPrintAllocation(allocation allocation) {
-	fmt.Println("Score: ", allocation.score)
+	fmt.Println("Score: ", allocation.Score)
 	fmt.Println("Allocation")
-	for _, v := range allocation.fireAllocation {
+	for _, v := range allocation.FireAllocation {
 		fmt.Println(v)
 	}
 }
