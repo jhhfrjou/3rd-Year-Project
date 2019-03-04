@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func hillClimb(iters int, scen scenario, timeOut time.Duration) ([]allocation, bool) {
+func hillClimb(iters int, scen scenario, timeOut time.Duration) ([]allocation, bool, int) {
 	allocs := []allocation{}
 	var better bool
 	randomBool := new()
@@ -15,12 +15,14 @@ func hillClimb(iters int, scen scenario, timeOut time.Duration) ([]allocation, b
 	var timer time.Duration
 	i := 0
 	j := 0
+	k := 0
 	avgStep := 0.0
 	for i < iters && time.Since(start) < timeOut {
 		loopTimer := time.Now()
 		if i%100 == 0 {
 			fmt.Println(i, avgStep/100, j, alloc.Score, timer)
 		}
+		k += j
 		j = 0
 		better = false
 		for !better && time.Since(start) < timeOut {
@@ -42,5 +44,5 @@ func hillClimb(iters int, scen scenario, timeOut time.Duration) ([]allocation, b
 		timer = time.Since(loopTimer)
 
 	}
-	return allocs, time.Since(start) > timeOut
+	return allocs, time.Since(start) > timeOut, k
 }

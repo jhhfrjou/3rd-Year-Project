@@ -37,9 +37,9 @@ func geneticAlgoAllocs(iters, samples int, scenario scenario, gen []allocation, 
 		sort.SliceStable(gen, func(i, j int) bool {
 			return gen[i].Score > gen[j].Score
 		})
+		j := rand.Intn(samples)
+		fmt.Println("Iter: ", i, " Best: ", gen[0].Score, "Rand: ", j, gen[j].Score, "Worst", gen[samples-1].Score)
 		if i%10 == 0 {
-			j := rand.Intn(samples)
-			fmt.Println("Iter: ", i, " Best: ", gen[0].Score, "Rand: ", j, gen[j].Score, "Worst", gen[samples-1].Score)
 		}
 		if bestWeight.Score < gen[0].Score {
 			bestWeight = gen[0]
@@ -58,7 +58,7 @@ func getNextGen(currentGen []allocation, mutateFactor float64, scenario scenario
 	wg := sync.WaitGroup{}
 	wg.Add(numSample)
 	overCount := 0
-	pool := int(float64(numSample) * 0.3)
+	pool := int(float64(numSample) * 0.7)
 
 	for i := 0; i < numSample; i++ {
 		go func(index int) {
@@ -84,7 +84,7 @@ func getNextGen(currentGen []allocation, mutateFactor float64, scenario scenario
 		}(i)
 	}
 	wg.Wait()
-	fmt.Println("OverCounts: ", overCount)
+	//fmt.Println("OverCounts: ", overCount)
 	return nextGen
 }
 
@@ -111,22 +111,17 @@ func getScores(samples []allocation, scenario scenario) {
 }
 
 func crossOver(p1, p2 [][]float64) [][]float64 {
-	child := make([][]float64, len(p1[0]))
-	p1T := transpose(p1)
-	p2T := transpose(p2)
-	for i := range p1T {
-		child[i] = make([]float64, len(p1))
+	child := make([][]float64, len(p1))
+	for i := range p1 {
+		child[i] = make([]float64, len(p1[i]))
 		if randomBool.Bool() {
-			for j := range p1T[i] {
-				child[i][j] = (p1T[i][j] + p2T[i][j]) / 2
-			}
-		} else if randomBool.Bool() {
-			copy(child[i], p2T[i])
+			copy(child[i], p1[i])
 		} else {
-			copy(child[i], p1T[i])
+			copy(child[i], p2[i])
 		}
 	}
-	return transpose(child)
+	normalise(child)
+	return child
 }
 
 func mutate(w [][]float64, mutateFactor float64, scen scenario) {
