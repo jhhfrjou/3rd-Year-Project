@@ -32,7 +32,8 @@ func singleScen(scen scenario) {
 		fmt.Println("Anneal")
 		alloc := readAllocFromFile("allocations/1stTestAscend.json")
 		fmt.Println("Hill Climb")
-		prettyPrintAllocation(allocs[len(allocs)-1])
+		prettyPrintAllocation(allocst86
+		[len(allocs)-1])
 		writeScorestoCSV(allocs, "genetic.csv", true)
 		alloc := getRandomWeight(scen)
 		fmt.Println("Genetic")

@@ -6,7 +6,7 @@ import (
 )
 
 func hillClimb(iters int, scen scenario, timeOut time.Duration) ([]allocation, bool, int) {
-	allocs := []allocation{}
+	allocs := make([]allocation, iters)
 	var better bool
 	randomBool := new()
 	alloc := getRandomWeight(scen)
@@ -39,7 +39,7 @@ func hillClimb(iters int, scen scenario, timeOut time.Duration) ([]allocation, b
 			avgStep += float64(j)
 			j++
 		}
-		allocs = append(allocs, copyAllocation(alloc))
+		allocs[i] = copyAllocation(alloc)
 		i++
 		timer = time.Since(loopTimer)
 
