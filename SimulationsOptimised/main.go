@@ -27,7 +27,7 @@ func allScens() {
 }
 
 func singleScen(scen scenario) {
-	iters := 10000
+	iters := 10
 	/*
 		fmt.Println("Anneal")
 		alloc := readAllocFromFile("allocations/1stTestAscend.json")
@@ -41,16 +41,17 @@ func singleScen(scen scenario) {
 		allocs = geneticAlgo(iters, 1000, scen, 1)
 		prettyPrintAllocation(allocs[len(allocs)-1])
 	*/
-	allocs := make([][]allocation, 1)
+	samples:= 10
+	allocs := make([][]allocation, samples)
 	//allocs := ascend(iters, 0.0001, 0.0001, scen)
 
 	wg := sync.WaitGroup{}
 	timeO, _ := time.ParseDuration("1h")
-	wg.Add(10)
-	for i := 0; i < 10; i++ {
+	wg.Add(samples)
+	for i := 0; i < samples; i++ {
 		go func(index int) {
-			allocs, _, _ := hillClimb(iters, scen, timeO)
-			prettyPrintAllocation(allocs[len(allocs)-1])
+			allocs[index], _, _ = hillClimb(iters, scen, timeO)
+			prettyPrintAllocation(allocs[index][iters-1])
 			wg.Done()
 		}(i)
 	}
