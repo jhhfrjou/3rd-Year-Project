@@ -2,7 +2,6 @@ package main
 
 import (
 	"sync"
-	"time"
 )
 
 func main() {
@@ -27,7 +26,7 @@ func allScens() {
 }
 
 func singleScen(scen scenario) {
-	iters := 10
+	iters := 10000
 	/*
 		fmt.Println("Anneal")
 		alloc := readAllocFromFile("allocations/1stTestAscend.json")
@@ -41,21 +40,22 @@ func singleScen(scen scenario) {
 		allocs = geneticAlgo(iters, 1000, scen, 1)
 		prettyPrintAllocation(allocs[len(allocs)-1])
 	*/
-	samples:= 10
-	allocs := make([][]allocation, samples)
 	//allocs := ascend(iters, 0.0001, 0.0001, scen)
-
-	wg := sync.WaitGroup{}
-	timeO, _ := time.ParseDuration("1h")
-	wg.Add(samples)
-	for i := 0; i < samples; i++ {
-		go func(index int) {
-			allocs[index], _, _ = hillClimb(iters, scen, timeO)
-			prettyPrintAllocation(allocs[index][iters-1])
-			wg.Done()
-		}(i)
+	samples := 10
+	for j := 0; j < samples; j++ {
+		wg := sync.WaitGroup{}
+		allocs := make([][]allocation, samples)
+		wg.Add(samples)
+		for i := 0; i < samples; i++ {
+			go func(index int) {
+				allocs[index] = anneal(iters, samples, float64(index*10), scen)
+				prettyPrintAllocation(allocs[index][iters-1])
+				wg.Done()
+			}(j)
+		}
+		wg.Wait()
+		writeManyToCSV(allocs, "hillClimb3Run"+string(j)+".csv")
 	}
-	wg.Wait()
-	writeManyToCSV(allocs, "hillClimb3.csv")
-
+	//alls := ascend(10000, 0.0001, 0.00001, scen)
+	//writeScorestoCSV(alls,"gradient3", false)
 }
