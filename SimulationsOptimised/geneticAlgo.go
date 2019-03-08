@@ -56,29 +56,20 @@ func getNextGen(currentGen []allocation, mutateFactor float64, scenario scenario
 	numSample := len(currentGen)
 	nextGen := make([]allocation, numSample)
 	wg := sync.WaitGroup{}
-	wg.Add(numSample)
+	wg.Add(numSample - 1)
 	overCount := 0
-	pool := int(float64(numSample) * 0.7)
-
-	for i := 0; i < numSample; i++ {
+	nextGen[0] = copyAllocation(currentGen[0])
+	for i := 1; i < numSample; i++ {
 		go func(index int) {
-			if index < 3 {
-				nextGen[index] = currentGen[index]
-			} else if index < 6 {
-				nextGen[index] = copyAllocation(currentGen[index-3])
-				mutate(nextGen[index].FireAllocation, mutateFactor, scenario)
-				nextGen[index].Score, _ = simulate(scenario, nextGen[index].FireAllocation, 1)
-			} else {
-				i1, i2 := rand.Intn(pool), rand.Intn(pool)
-				child := crossOver(currentGen[i1].FireAllocation, currentGen[i2].FireAllocation)
-				mutate(child, mutateFactor, scenario)
-				nextGen[index] = allocation{child, -math.MaxFloat64}
-				var count int
-				nextGen[index].Score, count = simulate(scenario, child, 1)
-				if count > 50000 {
-					overCount++
-					//fmt.Println(nextGen[index].Score, count)
-				}
+			i1, i2 := rand.Intn(index), rand.Intn(index)
+			child := crossOver(currentGen[i1].FireAllocation, currentGen[i2].FireAllocation)
+			mutate(child, mutateFactor, scenario)
+			nextGen[index] = allocation{child, -math.MaxFloat64}
+			var count int
+			nextGen[index].Score, count = simulate(scenario, child, 1)
+			if count > 50000 {
+				overCount++
+				//fmt.Println(nextGen[index].Score, count)
 			}
 			wg.Done()
 		}(i)
@@ -126,7 +117,7 @@ func crossOver(p1, p2 [][]float64) [][]float64 {
 
 func mutate(w [][]float64, mutateFactor float64, scen scenario) {
 	if rand.Float64() < mutateFactor {
-		add := matScale(logistic(rand.Intn(32000), 16000, 50), getRandomWeight(scen).FireAllocation)
+		add := matScale(logistic(rand.Intn(2000), 1000, 50), getRandomWeight(scen).FireAllocation)
 		w = matAdd(w, add, randomBool.Bool())
 	}
 	normalise(w)

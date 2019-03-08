@@ -188,11 +188,17 @@ func writeScorestoCSV(scores []allocation, fileName string, allocs bool) {
 
 func writeManyToCSV(scores [][]allocation, fileName string) {
 	file, _ := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY, 0777)
-	output := make([][]string, len(scores[0]))
-	for i := range scores[0] {
-		output[i] = make([]string, len(scores))
-		for j := range scores {
-			output[i][j] = fmt.Sprint(scores[j][i].Score)
+	for _, scoreL := range scores {
+		for _, score := range scoreL {
+			fmt.Print(score.Score, " ")
+		}
+		fmt.Println()
+	}
+	output := make([][]string, len(scores))
+	for i,scoreL := range scores {
+		output[i] = make([]string, len(scoreL))
+		for j,score := range scoreL {
+			output[i][j] = fmt.Sprint(score.Score)
 		}
 	}
 	csvWriter := csv.NewWriter(file)
