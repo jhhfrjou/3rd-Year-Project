@@ -42,29 +42,27 @@ func singleScen(scen scenario, scenName string) {
 				allocs = geneticAlgo(iters, 1000, scen, 1)
 				prettyPrintAllocation(allocs[len(allocs)-1])
 				allocs := ascend(iters, 0.0001, 0.0001, scen)
+				allocs := ascend(iters, 0.0001, 0.0001, scen)
 	*/
-	iters := 10000
-	samples := 100
 	timeOut, _ := time.ParseDuration("10h")
-	for j := 0; j < samples; j++ {
-		wg := sync.WaitGroup{}
+	iters := 10000
+	samples := 5 + 1
+	for j := 1; j < samples; j++ {
 		allocsAnneal := make([][]allocation, samples)
 		allocsHillClimb := make([][]allocation, samples)
 		allocsGrad := make([][]allocation, samples)
-		wg.Add(samples)
-		for i := 0; i < samples; i++ {
-			go func(indexI, indexJ int) {
-				allocsAnneal[indexI] = anneal(iters, samples, float64(indexJ*10), scen)
-				allocsHillClimb[indexI], _, _ = hillClimb(iters, scen, timeOut)
-				allocsGrad[indexI] = ascend(iters, 0.0001, float64(indexJ)*0.00001, scen)
-				fmt.Println(allocsAnneal[indexI][iters-1].Score)
-				wg.Done()
-			}(i, j)
+		allocsGen := make([][]allocation, samples)
+		for i := 1; i < samples; i++ {
+			allocsAnneal[i] = anneal(iters, samples, float64(j*10), scen)
+			allocsHillClimb[i], _, _ = hillClimb(iters, scen, timeOut)
+			allocsGrad[i] = ascend(iters, 0.0001, float64(j)*0.00001, scen)
+			allocsGen[i] = geneticAlgo(iters, 100, scen, 0.1*float64(j))
+
 		}
-		wg.Wait()
 		writeManyToCSV(allocsAnneal, "results/anneal"+scenName+"Run"+fmt.Sprint(j)+".csv")
 		writeManyToCSV(allocsHillClimb, "results/hillClimb"+scenName+"Run"+fmt.Sprint(j)+".csv")
 		writeManyToCSV(allocsGrad, "results/gradient"+scenName+"Run"+fmt.Sprint(j)+".csv")
+		writeManyToCSV(allocsGen, "results/gen"+scenName+"Run"+fmt.Sprint(j)+".csv")
 	}
 	//writeScorestoCSV(alls,"gradient3", false)
 }
