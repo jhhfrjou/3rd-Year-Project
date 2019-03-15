@@ -1,25 +1,25 @@
 import matplotlib.pyplot as plt
 import csv
 import numpy as np
+import os
+import re
+import pandas as pd 
 
-ys = []
-for i in range(10) :
-    ys.append([])
-sd = []
-first = True
-with open('TempuratureSchemesAnnealing3.csv','r') as file:
-    plots = csv.reader(file,delimiter=',')
-    for row in plots:
-        for i in range(len(row)):
-            if first:
-                first = False
-            ys[i].append(float(row[i]))
-x = range(len(ys[0]))
-for line in ys:
-    plt.plot(x, line)
-plt.show()        
-'''filteredFloats = map(lambda x: float(x), row)
-        filteredList = list(filter(lambda x: x != 0.0, filteredFloats))
-        filtered = np.array(filteredList)
-        ys.append(np.mean(filtered))
-        sd.append(np.std(filtered))'''
+
+def printScenario(graph,scenIndex):
+    files = os.listdir('results/')
+    geneticFilter = re.compile(re.escape(graph)+r'(scen)'+ re.escape(str(scenIndex)) + r'(Run)([0-9])(.csv)')
+    filtered = list(filter(geneticFilter.match,files))
+    print(filtered)
+    for fileName in filtered:
+        m = re.match(geneticFilter,fileName)
+        file = np.genfromtxt('results/'+fileName,delimiter=',')
+        plt.errorbar(range(len(file[0])), file.mean(axis=0), file.std(axis=0), errorevery=100, label=graph+": Run " + m.group(3))
+    plt.xlabel("Iterations")
+    plt.ylabel("Score")
+
+printScenario("anneal",3)
+printScenario("gradient",3)
+printScenario("gen",3)
+plt.legend()
+plt.show()
