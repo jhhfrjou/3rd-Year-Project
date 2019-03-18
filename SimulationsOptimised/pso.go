@@ -1,7 +1,7 @@
 package main
 
 import (
-	"math"
+	"fmt"
 	"math/rand"
 	"sync"
 )
@@ -10,7 +10,7 @@ func pso(iters, samples int, scenario scenario) []allocation {
 	currentWeights := getRandomWeights(scenario, samples)
 	bestWeight := getRandomWeight(scenario)
 	bestWeights := getRandomWeights(scenario, samples)
-	prevVelocity := getRandomWeights(scenario, samples)
+	prevVelocity := getRandomVelocs(scenario, samples)
 	progression := make([]allocation, iters)
 	wg := sync.WaitGroup{}
 
@@ -32,20 +32,23 @@ func pso(iters, samples int, scenario scenario) []allocation {
 		}
 		wg.Wait()
 		progression[i] = copyAllocation(bestWeight)
+		if i%10 == 0 {
+			fmt.Println(i, progression[i].Score)
+		}
 	}
 	return progression
 }
 
-func indPso(currentWeight, pbestWeight, bestWeight, prevVelocity allocation, ownBias, allBias float64, iter, totalIters int, scenario scenario) (allocation, allocation) {
+func indPso(currentWeight, pbestWeight, bestWeight allocation, prevVelocity [][]float64, ownBias, allBias float64, iter, totalIters int, scenario scenario) ([][]float64, allocation) {
 	ownBestRand := rand.Float64()
 	allBestRand := rand.Float64()
-	inertia := float64(totalIters-iter) * 0.00001
-	inertial := matScale(inertia, prevVelocity.FireAllocation)
+	inertia := float64(totalIters-iter) * 0.01
+	inertial := matScale(inertia, prevVelocity)
 	ownBestVec := matScale(ownBias*ownBestRand, matAdd(pbestWeight.FireAllocation, currentWeight.FireAllocation, false))
 	allBestVec := matScale(allBias*allBestRand, matAdd(bestWeight.FireAllocation, currentWeight.FireAllocation, false))
 	newV := matAdd(inertial, matAdd(ownBestVec, allBestVec, true), true)
 	newFireAlloc := matAdd(currentWeight.FireAllocation, newV, true)
 	normalise(newFireAlloc)
 	newFireScore, _ := simulate(scenario, newFireAlloc, 1)
-	return allocation{newV, -math.MaxFloat64}, allocation{newFireAlloc, newFireScore}
+	return newV, allocation{newFireAlloc, newFireScore}
 }

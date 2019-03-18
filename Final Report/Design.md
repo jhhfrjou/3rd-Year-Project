@@ -32,6 +32,12 @@ In this case since the differential of a set of weights is very difficult to ana
 
 
 #### Implementation
+A genetic algorithm uses 2 key functions in order to optimise the function. Crossover and Mutation
+##### Crossover
+Cross over is done by a rano
+##### Mutation 
+
+
 Tourney Selection
 Roulette Selection
 Doesnt work so idk what to do
@@ -40,5 +46,9 @@ Find the bug
 ### Bayes Optimisation
 
 ## Larger Problem Sizes
+
+## Threading and Running
+
+
 
 ## Problems

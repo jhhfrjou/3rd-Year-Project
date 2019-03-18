@@ -195,9 +195,9 @@ func writeManyToCSV(scores [][]allocation, fileName string) {
 		fmt.Println()
 	}
 	output := make([][]string, len(scores))
-	for i,scoreL := range scores {
+	for i, scoreL := range scores {
 		output[i] = make([]string, len(scoreL))
-		for j,score := range scoreL {
+		for j, score := range scoreL {
 			output[i][j] = fmt.Sprint(score.Score)
 		}
 	}
@@ -265,6 +265,22 @@ func getRandomWeight(scenario scenario) allocation {
 		weights[i] = getRandomVector(len(scenario.KR))
 	}
 	return allocation{transpose(weights), -math.MaxFloat64}
+}
+
+func getRandomVeloc(scenario scenario) [][]float64 {
+	weights := make([][]float64, len(scenario.KR[0]))
+	for i := range weights {
+		weights[i] = getRandomVector(len(scenario.KR))
+	}
+	return transpose(weights)
+}
+
+func getRandomVelocs(scenario scenario, sampleSize int) [][][]float64 {
+	velocs := make([][][]float64, sampleSize)
+	for i := range velocs {
+		velocs[i] = getRandomVeloc(scenario)
+	}
+	return velocs
 }
 
 func getRandomWeights(scenario scenario, sampleSize int) []allocation {

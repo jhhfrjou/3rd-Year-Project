@@ -111,17 +111,18 @@ func getScores(samples []allocation, scenario scenario) {
 }
 
 func crossOver(p1, p2 [][]float64) [][]float64 {
-	child := make([][]float64, len(p1))
-	for i := range p1 {
-		child[i] = make([]float64, len(p1[i]))
+	p1T := transpose(p1)
+	p2T := transpose(p2)
+	child := make([][]float64, len(p1T))
+	for i := range p1T {
+		child[i] = make([]float64, len(p1T[i]))
 		if randomBool.Bool() {
-			copy(child[i], p1[i])
+			copy(child[i], p1T[i])
 		} else {
-			copy(child[i], p2[i])
+			copy(child[i], p2T[i])
 		}
 	}
-	normalise(child)
-	return child
+	return transpose(child)
 }
 
 func mutate(w [][]float64, mutateFactor, scale float64, scen scenario) [][]float64 {

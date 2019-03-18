@@ -31,7 +31,7 @@ func anneal(iters int, samples int, rate float64, scenario scenario) []allocatio
 				}
 			} else {
 				deltaScore := newScore - weight.Score
-				chance := math.Exp(deltaScore * rate / float64(iters-i))
+				chance := math.Exp(deltaScore * float64(i) / rate)
 				p := rand.Float64()
 				if chance > p {
 					weight.Score = newScore
