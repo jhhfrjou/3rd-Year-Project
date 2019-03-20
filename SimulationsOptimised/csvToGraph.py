@@ -19,9 +19,16 @@ def printScenario(graph,scenIndex, label):
     plt.xlabel("Iterations")
     plt.ylabel("Score")
 
-printScenario("anneal",3,"Tempurature Scheme")
+def printIndividualRuns(file):
+    csv = np.genfromtxt('results/'+ file, delimiter=',')
+    for row in range(len(csv)):
+        plt.plot(range(len(csv[row])),csv[row],label=row)
+
+printIndividualRuns('testPsoscen3.csv')
+'''printScenario("anneal",3,"Tempurature Scheme")
 printScenario("gradient",3,"Learning Rate")
 printScenario("gen",3,"Mutation Rate")
 printScenario("hillClimb",3,"Climb")
+'''
 plt.legend()
 plt.show()
