@@ -25,8 +25,6 @@ type allocation struct {
 	Score          float64
 }
 
-var bigScen scenario
-
 func scale(scalor float64, vector []float64) []float64 {
 	wg := sync.WaitGroup{}
 	wg.Add(len(vector))
@@ -97,6 +95,7 @@ func getRandomDefaultScenario() scenario {
 }
 
 func getRandomScenario(rSize, bSize int) scenario {
+	rand.Seed(time.Now().Unix())
 	kR := make([][]float64, bSize)
 	kB := make([][]float64, rSize)
 	r := make([]float64, rSize)
@@ -130,13 +129,6 @@ func getDevelopingScenario() scenario {
 	R := []float64{300, 5}
 	B := []float64{250, 10, 20}
 	return scenario{R, B, kR, kB}
-}
-
-func getBigDevelopingScenario() scenario {
-	if len(bigScen.B) == 0 {
-		bigScen = readScenFromFile("largeScen.json")
-	}
-	return bigScen
 }
 
 func writeScentoFile(scen scenario, file string) {
