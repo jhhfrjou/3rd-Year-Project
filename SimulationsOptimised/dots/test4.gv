@@ -1,0 +1,60 @@
+digraph {
+splines=line;
+nodesep = 1;
+ranksep = 10;
+rankdir=LR
+subgraph cluster_0 {
+label="R";
+R0[label="R0: 379"];
+R1[label="R1: 363"];
+R2[label="R2: 165"];
+R3[label="R3: 210"];
+R4[label="R4: 157"];
+R5[label="R5: 188"];
+R6[label="R6: 338"];
+R7[label="R7: 186"];
+R8[label="R8: 349"];
+R9[label="R9: 199"];
+R10[label="R10: 381"];
+R11[label="R11: 334"];
+}
+subgraph cluster_1 {
+label="B";
+B0[label="B0: 220"];
+B1[label="B1: 65"];
+B2[label="B2: 258"];
+B3[label="B3: 51"];
+B4[label="B4: 264"];
+B5[label="B5: 118"];
+B6[label="B6: 171"];
+B7[label="B7: 257"];
+B8[label="B8: 94"];
+B9[label="B9: 135"];
+B10[label="B10: 194"];
+B11[label="B11: 66"];
+}
+R9-> B0[penwidth="3.74",xlabel="0.75",labeldistance=7];
+R10-> B0[penwidth="3.7",xlabel="0.74",labeldistance=7];
+R8-> B1[penwidth="1.63",xlabel="0.33",labeldistance=7];
+R1-> B2[penwidth="0.3",xlabel="0.06",labeldistance=7];
+R9-> B2[penwidth="1.26",xlabel="0.25",labeldistance=7];
+R11-> B2[penwidth="5",xlabel="1",labeldistance=7];
+R10-> B3[penwidth="0.82",xlabel="0.16",labeldistance=7];
+R0-> B4[penwidth="2.48",xlabel="0.5",labeldistance=7];
+R1-> B4[penwidth="2.95",xlabel="0.59",labeldistance=7];
+R6-> B4[penwidth="1.25",xlabel="0.25",labeldistance=7];
+R2-> B5[penwidth="5",xlabel="1",labeldistance=7];
+R3-> B5[penwidth="0.82",xlabel="0.16",labeldistance=7];
+R0-> B6[penwidth="1.56",xlabel="0.31",labeldistance=7];
+R7-> B6[penwidth="4.59",xlabel="0.92",labeldistance=7];
+R5-> B7[penwidth="5",xlabel="1",labeldistance=7];
+R6-> B7[penwidth="3.75",xlabel="0.75",labeldistance=7];
+R7-> B7[penwidth="0.41",xlabel="0.08",labeldistance=7];
+R8-> B8[penwidth="1.77",xlabel="0.35",labeldistance=7];
+R10-> B8[penwidth="0.49",xlabel="0.1",labeldistance=7];
+R0-> B9[penwidth="0.96",xlabel="0.19",labeldistance=7];
+R4-> B9[penwidth="5",xlabel="1",labeldistance=7];
+R1-> B10[penwidth="1.75",xlabel="0.35",labeldistance=7];
+R3-> B10[penwidth="4.18",xlabel="0.84",labeldistance=7];
+R8-> B11[penwidth="1.6",xlabel="0.32",labeldistance=7];
+}

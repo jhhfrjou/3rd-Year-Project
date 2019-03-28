@@ -280,7 +280,7 @@ func getRandomWeights(scenario scenario, sampleSize int) []allocation {
 func getRandomVector(num int) []float64 {
 	samples := make([]float64, num)
 	for i := 0; i < num; i++ {
-		if rand.Float64() < 0.3 {
+		if rand.Float64() < 0.2 {
 			samples[i] = 0
 		} else {
 			samples[i] = rand.Float64()
@@ -422,4 +422,36 @@ func diffWeightScore(indexX, indexY, policyCode int, delta, origScore float64, o
 	score, _ := simulate(scen, differential, policyCode)
 	diff := score - origScore
 	return diff / delta
+}
+
+func allocToGraph(scenario scenario, allocation allocation, fileOut string) {
+	f, _ := os.Create(fileOut)
+	fmt.Fprintln(f, "digraph {")
+	fmt.Fprintln(f, "splines=line;")
+	fmt.Fprintln(f, "nodesep = 1;")
+	fmt.Fprintln(f, "ranksep = 10;")
+	fmt.Fprintln(f, "rankdir=LR")
+	fmt.Fprintln(f, "subgraph cluster_0 {")
+	fmt.Fprintln(f, "label=\"R\";")
+	for i, v := range scenario.R {
+		fmt.Fprintln(f, "R"+fmt.Sprint(i)+"[label=\"R"+fmt.Sprint(i)+": "+fmt.Sprint(v)+"\"];")
+	}
+	fmt.Fprintln(f, "}")
+
+	fmt.Fprintln(f, "subgraph cluster_1 {")
+	fmt.Fprintln(f, "label=\"B\";")
+	for i, v := range scenario.B {
+		fmt.Fprintln(f, "B"+fmt.Sprint(i)+"[label=\"B"+fmt.Sprint(i)+": "+fmt.Sprint(v)+"\"];")
+	}
+	fmt.Fprintln(f, "}")
+	for i, vec := range allocation.FireAllocation {
+		for j, val := range vec {
+			if val != 0 {
+				fmt.Fprintln(f, "R"+fmt.Sprint(j)+"-> B"+fmt.Sprint(i)+"[penwidth=\""+fmt.Sprint(math.Round(val*500)/100)+"\",xlabel=\""+fmt.Sprint(math.Round(val*100)/100)+"\",labeldistance=7];")
+			}
+		}
+	}
+	fmt.Fprintln(f, "}")
+	f.Close()
+
 }

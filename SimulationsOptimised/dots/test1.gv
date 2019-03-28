@@ -1,0 +1,65 @@
+digraph {
+splines=line;
+nodesep = 1;
+ranksep = 10;
+rankdir=LR
+subgraph cluster_0 {
+label="R";
+R0[label="R0: 110"];
+R1[label="R1: 410"];
+R2[label="R2: 150"];
+R3[label="R3: 130"];
+R4[label="R4: 410"];
+R5[label="R5: 280"];
+R6[label="R6: 280"];
+R7[label="R7: 340"];
+R8[label="R8: 330"];
+R9[label="R9: 490"];
+R10[label="R10: 450"];
+R11[label="R11: 120"];
+R12[label="R12: 440"];
+}
+subgraph cluster_1 {
+label="B";
+B0[label="B0: 170"];
+B1[label="B1: 110"];
+B2[label="B2: 100"];
+B3[label="B3: 240"];
+B4[label="B4: 190"];
+B5[label="B5: 210"];
+B6[label="B6: 160"];
+B7[label="B7: 180"];
+B8[label="B8: 170"];
+B9[label="B9: 200"];
+B10[label="B10: 180"];
+B11[label="B11: 190"];
+}
+R9-> B0[penwidth="1.38",xlabel="0.28",labeldistance=7];
+R10-> B0[penwidth="1.88",xlabel="0.38",labeldistance=7];
+R3-> B1[penwidth="4.39",xlabel="0.88",labeldistance=7];
+R4-> B1[penwidth="1.54",xlabel="0.31",labeldistance=7];
+R10-> B2[penwidth="2.2",xlabel="0.44",labeldistance=7];
+R0-> B3[penwidth="0.59",xlabel="0.12",labeldistance=7];
+R7-> B3[penwidth="0.18",xlabel="0.04",labeldistance=7];
+R8-> B3[penwidth="5",xlabel="1",labeldistance=7];
+R12-> B3[penwidth="0.17",xlabel="0.03",labeldistance=7];
+R12-> B4[penwidth="3.85",xlabel="0.77",labeldistance=7];
+R1-> B5[penwidth="3.49",xlabel="0.7",labeldistance=7];
+R2-> B5[penwidth="4.17",xlabel="0.83",labeldistance=7];
+R1-> B6[penwidth="0.41",xlabel="0.08",labeldistance=7];
+R6-> B6[penwidth="3.63",xlabel="0.73",labeldistance=7];
+R10-> B6[penwidth="0.92",xlabel="0.18",labeldistance=7];
+R0-> B7[penwidth="4.41",xlabel="0.88",labeldistance=7];
+R1-> B7[penwidth="1.1",xlabel="0.22",labeldistance=7];
+R6-> B7[penwidth="1.37",xlabel="0.27",labeldistance=7];
+R11-> B7[penwidth="5",xlabel="1",labeldistance=7];
+R3-> B8[penwidth="0.61",xlabel="0.12",labeldistance=7];
+R5-> B8[penwidth="4.15",xlabel="0.83",labeldistance=7];
+R12-> B8[penwidth="0.99",xlabel="0.2",labeldistance=7];
+R5-> B9[penwidth="0.64",xlabel="0.13",labeldistance=7];
+R7-> B9[penwidth="4.82",xlabel="0.96",labeldistance=7];
+R2-> B10[penwidth="0.83",xlabel="0.17",labeldistance=7];
+R4-> B10[penwidth="3.46",xlabel="0.69",labeldistance=7];
+R5-> B11[penwidth="0.21",xlabel="0.04",labeldistance=7];
+R9-> B11[penwidth="3.62",xlabel="0.72",labeldistance=7];
+}

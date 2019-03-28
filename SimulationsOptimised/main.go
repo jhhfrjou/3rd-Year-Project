@@ -7,23 +7,8 @@ import (
 )
 
 func main() {
-	scen := readScenFromFile("scenJsons/1stTest.json")
-	singleScen(scen, "scen1")
-	//pso(3000, 100, scen, 10, 19)
-	/*samples := 10
-	allocsPso := make([][]allocation, samples*samples)
-	wg := sync.WaitGroup{}
-	wg.Add(samples * samples)
-	for i := 0; i < samples; i++ {
-		for j := 0; j < samples; j++ {
-			go func(i, j int) {
-				wg.Done()
-			}(i, j)
-		}
-	}
-	wg.Wait()
-	writeManyToCSV(allocsPso, "results/Psoscen3Test2.csv")*/
-
+	scen := readScenFromFile("scens/5thTest.json")
+	singleScen(scen, "scen5")
 }
 
 func allScens() {
@@ -41,15 +26,15 @@ func allScens() {
 func singleScen(scen scenario, scenName string) {
 	timeOut, _ := time.ParseDuration("10h")
 	iters := 10000
-	samples := 5
+	samples := 6
 	wgJ := sync.WaitGroup{}
-	for j := 1; j < samples; j++ {
-		wgJ.Add(4)
-		go func(indexJ int) {
-			allocsAnneal := make([][]allocation, samples)
+	wgJ.Add(4)
+	go func() {
+		for indexJ := 1; indexJ < samples; indexJ++ {
+			allocsAnneal := make([][]allocation, 5)
 			wgI := sync.WaitGroup{}
-			wgI.Add(samples)
-			for i := 0; i < samples; i++ {
+			wgI.Add(5)
+			for i := 0; i < 5; i++ {
 				go func(indexI int) {
 					allocsAnneal[indexI] = anneal(iters, 100, float64(indexJ*10), scen)
 					fmt.Println("finished anneal", indexJ, indexI)
@@ -58,13 +43,15 @@ func singleScen(scen scenario, scenName string) {
 			}
 			wgI.Wait()
 			writeManyToCSV(allocsAnneal, "results/anneal"+scenName+"Run"+fmt.Sprint(indexJ)+".csv")
-			wgJ.Done()
-		}(j)
-		go func(indexJ int) {
-			allocsGrad := make([][]allocation, samples)
+		}
+		wgJ.Done()
+	}()
+	go func() {
+		for indexJ := 1; indexJ < samples; indexJ++ {
+			allocsGrad := make([][]allocation, 5)
 			wgI := sync.WaitGroup{}
-			wgI.Add(samples)
-			for i := 0; i < samples; i++ {
+			wgI.Add(5)
+			for i := 0; i < 5; i++ {
 				go func(indexI int) {
 					allocsGrad[indexI] = ascend(iters, 0.0001, float64(indexJ)*0.00001, scen)
 					fmt.Println("finished ascent", indexJ, indexI)
@@ -73,13 +60,15 @@ func singleScen(scen scenario, scenName string) {
 			}
 			wgI.Wait()
 			writeManyToCSV(allocsGrad, "results/gradient"+scenName+"Run"+fmt.Sprint(indexJ)+".csv")
-			wgJ.Done()
-		}(j)
-		go func(indexJ int) {
-			allocsGen := make([][]allocation, samples)
+		}
+		wgJ.Done()
+	}()
+	go func() {
+		for indexJ := 1; indexJ < samples; indexJ++ {
+			allocsGen := make([][]allocation, 5)
 			wgI := sync.WaitGroup{}
-			wgI.Add(samples)
-			for i := 0; i < samples; i++ {
+			wgI.Add(5)
+			for i := 0; i < 5; i++ {
 				go func(indexI int) {
 					allocsGen[indexI] = geneticAlgo(iters, 1000, scen, 0.2*float64(indexJ))
 					fmt.Println("finished ge", indexJ, indexI)
@@ -88,13 +77,15 @@ func singleScen(scen scenario, scenName string) {
 			}
 			wgI.Wait()
 			writeManyToCSV(allocsGen, "results/gen"+scenName+"Run"+fmt.Sprint(indexJ)+".csv")
-			wgJ.Done()
-		}(j)
-		go func(indexJ int) {
-			allocsPso := make([][]allocation, samples)
+		}
+		wgJ.Done()
+	}()
+	go func() {
+		for indexJ := 1; indexJ < samples; indexJ++ {
+			allocsPso := make([][]allocation, 5)
 			wgI := sync.WaitGroup{}
-			wgI.Add(samples)
-			for i := 0; i < samples; i++ {
+			wgI.Add(5)
+			for i := 0; i < 5; i++ {
 				go func(indexI int) {
 					allocsPso[indexI] = pso(iters, 1000, scen, 5, 2*float64(indexJ))
 					fmt.Println("finished pso", indexJ, indexI)
@@ -103,15 +94,15 @@ func singleScen(scen scenario, scenName string) {
 			}
 			wgI.Wait()
 			writeManyToCSV(allocsPso, "results/pso"+scenName+"Run"+fmt.Sprint(indexJ)+".csv")
-			wgJ.Done()
-		}(j)
-	}
+		}
+		wgJ.Done()
+	}()
 	wgJ.Add(1)
 	go func() {
-		allocsHillClimb := make([][]allocation, samples)
+		allocsHillClimb := make([][]allocation, 5)
 		wgHill := sync.WaitGroup{}
-		wgHill.Add(samples)
-		for i := 0; i < samples; i++ {
+		wgHill.Add(5)
+		for i := 0; i < 5; i++ {
 			go func(indexI int) {
 				allocsHillClimb[indexI], _, _ = hillClimb(iters, scen, timeOut)
 				wgHill.Done()
