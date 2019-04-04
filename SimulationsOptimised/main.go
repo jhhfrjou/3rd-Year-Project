@@ -7,8 +7,21 @@ import (
 )
 
 func main() {
-	scen := readScenFromFile("scens/5thTest.json")
-	singleScen(scen, "scen5")
+	scen := readScenFromFile("scens/4thTest.json")
+	start := time.Now()
+	geneticAlgo(1, 10000, scen, 1)
+	fmt.Println(time.Since(start))
+	// alloc := readAllocFromFile("allocations/test4.json")
+	// printAllocs(scen, alloc)
+}
+
+func printAllocs(scen scenario, alloc allocation) {
+	for i, vec := range alloc.FireAllocation {
+		for j, val := range vec {
+			comb := combs([]float64{scen.R[j], scen.B[i], scen.KR[i][j], scen.KB[j][i]})
+			fmt.Println(i, j, val, comb)
+		}
+	}
 }
 
 func allScens() {

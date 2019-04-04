@@ -46,9 +46,7 @@ func geneticAlgoAllocs(iters, samples int, scenario scenario, gen []allocation, 
 			bestWeight = gen[0]
 		}
 		bestWeights[i] = copyAllocation(bestWeight)
-		//start := time.Now()
 		gen = getNextGen(gen, mutateFactor, scenario)
-		//fmt.Println(time.Since(start))
 	}
 	return bestWeights
 }
@@ -58,33 +56,18 @@ func getNextGen(currentGen []allocation, mutateFactor float64, scenario scenario
 	nextGen := make([]allocation, numSample)
 	wg := sync.WaitGroup{}
 	wg.Add(numSample - 1)
-	overCount := 0
-	forceRedo := false
 	nextGen[0] = copyAllocation(currentGen[0])
-	if currentGen[0].Score == currentGen[numSample/2].Score {
-		forceRedo = true
-	}
 	for i := 1; i < numSample; i++ {
 		go func(index int) {
 			i1, i2 := rand.Intn(int(float64(numSample)*0.7)), rand.Intn(int(float64(numSample)*0.7))
 			child := crossOver(currentGen[i1].FireAllocation, currentGen[i2].FireAllocation)
-			if !forceRedo {
-				child = mutate(child, mutateFactor, logistic(rand.Intn(2000), 1000, 50), scenario)
-			} else {
-				child = mutate(child, mutateFactor, 0.1, scenario)
-			}
+			child = mutate(child, mutateFactor, logistic(rand.Intn(2000), 1000, 50), scenario)
 			nextGen[index] = allocation{child, -math.MaxFloat64}
-			var count int
-			nextGen[index].Score, count = simulate(scenario, child, 1)
-			if count > 50000 {
-				overCount++
-				//fmt.Println(nextGen[index].Score, count)
-			}
+			nextGen[index].Score, _ = simulate(scenario, child, 1)
 			wg.Done()
 		}(i)
 	}
 	wg.Wait()
-	//fmt.Println("OverCounts: ", overCount)
 	return nextGen
 }
 

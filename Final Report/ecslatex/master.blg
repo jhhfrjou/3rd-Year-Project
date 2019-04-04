@@ -1,0 +1,72 @@
+This is BibTeX, Version 0.99d (TeX Live 2019/dev/Debian)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: master.aux
+A level-1 auxiliary file: 0_Abstract.aux
+A level-1 auxiliary file: 00_Introduction.aux
+A level-1 auxiliary file: 1_Background.aux
+A level-1 auxiliary file: 2_PreviousWork.aux
+A level-1 auxiliary file: 3_Design.aux
+A level-1 auxiliary file: 4_Implementation.aux
+A level-1 auxiliary file: 5_Results.aux
+A level-1 auxiliary file: 6_Eval.aux
+A level-1 auxiliary file: 7_ProjectManage.aux
+A level-1 auxiliary file: 8_FutureWork.aux
+A level-1 auxiliary file: 9_Conclusions.aux
+The style file: src/IEEEtran.bst
+A level-1 auxiliary file: 99_Appendix.aux
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Database file #1: master.bib
+Warning--I didn't find a database entry for "Gunn:2001:pdflatex"
+-- IEEEtran.bst version 1.12 (2007/01/11) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+Warning--missing institution in Weiss
+Warning--empty year in Weiss
+
+Done.
+You've used 11 entries,
+            4024 wiz_defined-function locations,
+            892 strings with 9121 characters,
+and the built_in function-call counts, 5270 in all, are:
+= -- 423
+> -- 94
+< -- 16
++ -- 48
+- -- 19
+* -- 233
+:= -- 941
+add.period$ -- 23
+call.type$ -- 11
+change.case$ -- 9
+chr.to.int$ -- 42
+cite$ -- 13
+duplicate$ -- 420
+empty$ -- 472
+format.name$ -- 23
+if$ -- 1141
+int.to.chr$ -- 0
+int.to.str$ -- 11
+missing$ -- 85
+newline$ -- 62
+num.names$ -- 11
+pop$ -- 211
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 2
+skip$ -- 404
+stack$ -- 0
+substring$ -- 107
+swap$ -- 274
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 5
+type$ -- 11
+warning$ -- 2
+while$ -- 19
+width$ -- 13
+write$ -- 122
+(There were 3 warnings)

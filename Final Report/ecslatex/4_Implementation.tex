@@ -1,0 +1,46 @@
+%% ----------------------------------------------------------------
+%% Previous Work.tex
+%% ---------------------------------------------------------------- 
+\chapter{Implementation} \label{Chapter:four}
+
+In order to find the most optimal allocations for a given scenario I have attempted to use several techniques.  I will discuss my implementation, any trade-offs made, accuracy for speed and any additional tests run to find suitable constants to use.
+
+\section{Simulations}
+
+From previous work on the simplier situations, one on one and one to many engagements, there was a rough template to use, however while one to many engagements require the use of vectors/1d arrays, many to many engagements require matrices to be used. The heavy use of matrix manipulation means that the way the
+
+
+\section{Hill Climbing}
+
+Implementing what I had designed resulted in significant underperformance. Therefore I decided to alter it. I changed the the way an iteration is counted. The generation of random weights and their addition to the current allocation is repeated until this newly generated allocation scores higher than the previous allocation. I have used a sigmoid function to decreases the scaling of the generated allocation being added to the allocation matrix from 0.01 -> 0, so that with more attempts made the size of the *step* taken is smaller so it ensures that the hillclimber doesn't overshoot an improved solution.This implementation has the possibility of being stuck in an infinite loop when the optimal solution has been found. Therefore I have added a time out, which will ensure that the algorithm will eventually end.
+
+\section{Simulated Annealing}
+
+This has been implemented in a similar way to hill climbing. For each temperature there will be a finite number of attempts to find an improved weight. A random weight is generated and scaled, and this is added to the current weight. This temporary weight is then scored, if this new weight scores better than the previous weight, it is stored as the new current weight. This temporary weight can also become the new weight if *Formula* is less than a randomly generated number between 0-1. As the number of iterations increases the size of the the function will decrease so the chances of selecting a worse weight will also decrease.
+
+\section{Gradient Descent}
+
+In this case since the differential of a set of weights is very difficult to analytically create, an approximation is made by increasing the weights in each dimension and a new score is calculated for each increase. *Diagram or formula thing*. This gives the best results out of all of the options, however approximation of the differential becomes more expensive with more complex scenarios.
+
+\section{Genetic Algorithms}
+
+The genetic algorithm has been implemented in as I initially designed it. Cross over is done by a random. I have also attempted a variety of methods to mutate the allocation matrix.
+
+\section{Particle Swarm Optimisation}
+
+Something.
+
+\section{Multithreading and Parallelism}
+
+The running of the simulation is very computationally expensive, on average taking 10-100ms to run. Some algorithms require a significantly large number of times the program will take a day or more to run. A large number of these simulations do not need to be run sequential such as getting the score of members of the population in a genetic algorithm and all the slightly different allocation matrices used to approximate the differential. To improve the performance of these I have parallelised all the parts of the code that do not need to be run sequentially in order to improve perform. I have used golang's version of thread pools, waitgroups, to parallelise the simulations. These work by adding the number of threads that will run to a counter, when each thread is finished the counter is decremented and a wait function is called, which blocks until the counter returns to 0.
+
+\section{Graph Drawing}
+
+After optimising allocation matrices, the end result is a list of allocation matrices and their scores which is hard to visualise and understand at a glance. Therefore graphs are necessary to easily view the outcomes of the. There are two groups of graphs used: the progression of scores with the number of iterations, used to show the functionality and suitability of the algorithms and the second is graphical view of the allocation matrix. Where each value of the allocation matrix corresponds to the line on the graph.
+*Add examples?*
+
+\subsection{Scores}
+
+Since python has the best graphing support with matplotlib, I decided to use that.  
+
+\subsection{Network Graphs}
