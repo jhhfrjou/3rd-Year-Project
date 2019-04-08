@@ -426,6 +426,7 @@ func diffWeightScore(indexX, indexY, policyCode int, delta, origScore float64, o
 
 func allocToGraph(scenario scenario, allocation allocation, fileOut string) {
 	f, _ := os.Create(fileOut)
+	defer f.Close()
 	fmt.Fprintln(f, "digraph {")
 	fmt.Fprintln(f, "splines=line;")
 	fmt.Fprintln(f, "nodesep = 1;")
@@ -452,6 +453,4 @@ func allocToGraph(scenario scenario, allocation allocation, fileOut string) {
 		}
 	}
 	fmt.Fprintln(f, "}")
-	f.Close()
-
 }

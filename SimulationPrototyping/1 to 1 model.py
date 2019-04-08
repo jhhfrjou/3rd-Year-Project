@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def Combat(state, ks):
+def Combat(state, ks,delta):
     R = state[0]
     B = state[1]
     Kr = ks[0]
@@ -9,15 +9,15 @@ def Combat(state, ks):
     if(R < 0 or B < 0):
         return [0,0]
     #Calcs
-    dR = -Kr*B*0.0001
-    dB = -Kb*R*0.0001
+    dR = -Kr*B*delta
+    dB = -Kb*R*delta
     return [dR,dB]
 
-def Test(Kb):
-    R = B = R0 = B0 = 50
+def Test(delta,Kb):
+    R = B = R0 = B0 = 500
     Kr = 0.25
     while(R > 0.1 and B > 0.1):
-        change = Combat([R,B],[Kr,Kb])
+        change = Combat([R,B],[Kr,Kb],delta)
         R += change[0]
         B += change[1]
     if(R > B):
@@ -38,20 +38,21 @@ remainingB = []
 Kbs = []
 conserved = []
 
-rangeNum = 100
+rangeNum = 20
 
 for i in range(rangeNum):
-    k = (i+1.0)/rangeNum
-    tests = Test(k)
+    k = 0.5**i
+    tests = Test(k,0.3)
     remainingR.append(tests[0])
     remainingB.append(tests[1])
     conserved.append(tests[2])
     Kbs.append(k)
 
-plt.plot(Kbs,remainingR, 'ro-', label='Red')
-plt.ylabel("Surviving Force")
-plt.xlabel("kB")
-plt.plot(Kbs,remainingB, 'bo-', label='Blue')
+plt.scatter(Kbs,remainingR, c='r', label='Red')
+##plt.scatter(Kbs,remainingB, c='b', label='Blue')
 plt.plot(Kbs,conserved, 'g--', label='Calculated Quantity')
+plt.ylabel("Surviving Force")
+plt.xlabel("Delta")
+plt.xscale('log')
 plt.legend()
 plt.show()

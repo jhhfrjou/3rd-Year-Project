@@ -20,7 +20,6 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Database file #1: master.bib
-Warning--I didn't find a database entry for "Gunn:2001:pdflatex"
 -- IEEEtran.bst version 1.12 (2007/01/11) by Michael Shell.
 -- http://www.michaelshell.org/tex/ieeetran/bibtex/
 -- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
@@ -30,7 +29,7 @@ Warning--empty year in Weiss
 Done.
 You've used 11 entries,
             4024 wiz_defined-function locations,
-            892 strings with 9121 characters,
+            890 strings with 9085 characters,
 and the built_in function-call counts, 5270 in all, are:
 = -- 423
 > -- 94
@@ -69,4 +68,4 @@ warning$ -- 2
 while$ -- 19
 width$ -- 13
 write$ -- 122
-(There were 3 warnings)
+(There were 2 warnings)
