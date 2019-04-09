@@ -2,7 +2,7 @@
 
 ### Proof of functional algorithms
 
-Below will be a set of graphs showing the convergence of the different techniques used. Most of these techniques use require hyperparameters to be chosen in order for these algorithms to run at their full potential, however from the 
+Below will be a set of graphs showing the convergence of the different techniques used. Most of these techniques use require hyperparameters to be chosen in order for these algorithms to run at their full potential. 
 There will be some graphs showing how the different implementations improve over time.
 
 ### Hyperparameter Selection

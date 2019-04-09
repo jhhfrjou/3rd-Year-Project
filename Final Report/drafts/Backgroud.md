@@ -2,7 +2,7 @@
 
 ## The Lanchester Dynamics
 
-The Lanchester dynamics were theorises by Fredrick Lanchester in 1916 in order to model attrition rates during a battle in his paper “Aircraft in Warfare, the dawn of the fourth arm”. \cite{lanchester1995aircraft} Two independent systems were proposed: Aimed and unaimed models. With unaimed fire, like mortar and artillery bombardment, the rate of loss is proportional to the product of the size of both forces. In my project I will be focused on aimed fire where unaimed fire could be used in support. When a battle consists of aimed fire, the rate of loss of as side is proportional to size of opposing force. 
+The Lanchester dynamics were theorises by Fredrick Lanchester in 1916 in order to model attrition rates during a battle in his paper “Aircraft in Warfare, the dawn of the fourth arm”. \cite{lanchester1995aircraft} Two independent systems were proposed: Aimed and unaimed models. With unaimed fire, like mortar and artillery bombardment, the rate of loss is proportional to the product of the size of both forces. In my project I will be focused on aimed fire where unaimed fire could be used in support. When a battle consists of aimed fire, the rate of loss of as side is proportional to size of opposing force.
 
 This model contains conserved quantities,
 , which allows you to determine the outcome of the engagement from the initial conditions and the attrition factors. The sign of the constant will determine the victor of the battle and using the magnitude and you can find the size of that remaining force. 

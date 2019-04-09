@@ -53,15 +53,15 @@ This has been implemented in a similar way to hill climbing. For each temperatur
 
 ### Gradient Descent
 
-In this case since the differential of a set of weights is very difficult to analytically create, an approximation is made by increasing the weights in each dimension and a new score is calculated for each increase. *Diagram or formula thing*. This gives the best results out of all of the options, however approximation of the differential becomes more expensive with more complex scenarios.
+In this case since the differential of a set of weights is very difficult to analytically create, an approximation is made by increasing the weights in each dimension and a new score is calculated for each increase. *Diagram or formula thing*. This gives the best results out of all of the options however approximation of the differential becomes more expensive with more complex scenarios with a greater number of arms on each side.
 
 ### Genetic Algorithms
 
-The genetic algorithm has been implemented in as I initially designed it. Cross over is done by a randomly selecting an arms allocation (a column of the allocations matrix) from the parent allocation matrix . Initially I was having problems where the algorithm was getting stuck in allocations that scored significantly lower than other optimisation functions. Therefore I had tried other methods to perform cross over, selecting the way the each enemy is being attacked (rows of the allocation matrix) and selecting each element individually from the parent matrices. These two methods both performed significantly worse than the crossover function originally designed. *INSERT GRAPH?* I have also attempted a variety of methods to mutate the allocation matrix.
+The genetic algorithm has been implemented in as I initially designed it. Cross over is done by a randomly selecting an arms allocation (a column of the allocations matrix) from the parent allocation matrix . Initially I was having problems where the algorithm was getting stuck in allocations that scored significantly lower than other optimisation functions. Therefore I had tried other methods to perform cross over, selecting the way the each enemy is being attacked (rows of the allocation matrix) and selecting each element individually from the parent matrices. These two methods both performed significantly worse than the crossover function originally designed, in addition to they are slower to run since the results must be normalised after selection. *INSERT GRAPH?* I have also attempted a variety of methods to mutate the allocation matrix.
 
 ### Particle Swarm Optimisation
 
-The implementation of particle swarm optimisation follows the design very closely. This seemed to be the simplest implementation until I had to manually set hyperparameters to attempt to have a functional c
+The implementation of particle swarm optimisation follows the design very closely. This seemed to be the simplest implementation until I had to manually set hyperparameters. Initially I selected hyperparameters between 0 and 1 which resulted in a lack of improvement, like in the genetic algorithm. The issue was the steps taken became increasingly smaller with each iteration results in no exploration. By increasing the magnitude of the hyperparameters to between 0 and 10 the function worked better, with scores improving significantly.
 
 ## Multithreading and Parallelism
 
@@ -69,13 +69,14 @@ The running of the simulation is very computationally expensive, on average taki
 
 ## Graph Drawing
 
-After optimising allocation matrices, the end result is a list of allocation matrices and their scores which is hard to understand at a glance. Therefore graphs are necessary to easily view the outcomes of the. There are two groups of graphs used: the progression of scores with the number of iterations, used to show the functionality and suitability of the algorithms and the second is graphical view of the allocation matrix. Where each value of the allocation matrix corresponds to the line on the graph.
+After optimising allocation matrices, the functions return a list of the best allocation matrices and their scores for each iteration. These are quite difficult to interpret quickly. Therefore graphs are necessary to easily view the outcomes of the optimisation functions. There are two groups of graphs used: the progression of scores with the number of iterations, used to show the functionality and suitability of the algorithms and the second is graphical view of the allocation matrix. Where each value of the allocation matrix corresponds to the line on the graph. This is useful for looking for trends in the allocation matrices.
+
 *Add examples?*
 
 ### Scores
 
-The scores are drawn using matplotlib. The optimisation functions return an array of the best allocations from each iteration. The multiple runs of the optimisation function are then combined into a 2d array of scores and are written to a csv file. This is parsed by the python script into a 2d array of scores. The average and standard deviations of these scores are found and the average and standard deviation are plotted onto a graph using the errorbar plotting function.
+The scores are drawn using matplotlib. The optimisation functions return an array of the best allocations from each iteration. The multiple runs of the optimisation function are then combined into a 2d array of scores and are written to a csv file. This is parsed by the python script into a 2d array of scores. The average and standard deviations of these scores are found are plotted onto a graph using the errorbar plotting function. This shows the progression of the functions and also the convergence of the functions.
 
 ### Network Graphs
 
-The network graphs to visualise the allocations are drawn using graphviz. To get the final allocation matrix from a 2d array to a format that can be read by graphviz to produce the graph. The initial scenario is used to get the initial number of arms on each side and their sizes. These are then written to the graphviz file as the nodes of the gr The allocation matrix is iterated through and non-zero elements are added to the graphvis file with their i and j indices.
+The network graphs to visualise the allocations are drawn using graphviz. To get the final allocation matrix from a 2d array to a format that can be read by graphviz to produce the graph. The initial scenario is used to get the initial number of arms on each side and their sizes. These are then written to the graphviz file as the clusters of nodes on each side. Then the allocation matrix is iterated through and non-zero elements are added as edges between Rj and Bi, since each element denotes Rj attacking Bi with that proportion of their total firepower. These edged have their width set to be the proportional to their proportion of firepower, so 0.98 of their force will a darker and wider line than 0.01. This creates an image that makes it easier to understand the allocation. This shows which friendly arm should attack each enemy arm and with the proportion of their force.

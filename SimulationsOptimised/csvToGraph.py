@@ -17,15 +17,15 @@ def printScenario(graph,scenIndex, label):
         file = np.genfromtxt('results/'+fileName,delimiter=',')
         file[file==0] = np.nan
         if graph == "gen":
-                plt.errorbar(range(len(file[0])), np.nanmean(file,axis=0), 0.3*file.std(axis=0),c=(0.7, 0, colourOffset*0.1), errorevery=100, label="Genetic Algorithm: " + label + " " + str(0.15*float(m.group(3))))
+                plt.errorbar(range(len(file[0])), np.nanmean(file,axis=0), file.std(axis=0),c=(0.7, 0, colourOffset*0.1), errorevery=100, label="Genetic Algorithm: " + label + " " + str(0.2*float(m.group(3))))
         elif graph == "gradient":
-                plt.errorbar(range(len(file[0])), np.nanmean(file,axis=0), 0.3*file.std(axis=0),c=(0, 0.7, colourOffset*0.1), errorevery=100, label="Gradient Ascent: " + label + " " + str(0.0001*float(m.group(3))))
+                plt.errorbar(range(len(file[0])), np.nanmean(file,axis=0), file.std(axis=0),c=(0, 0.7, colourOffset*0.1), errorevery=100, label="Gradient Ascent: " + label + " " + str(0.0001*float(m.group(3))))
         elif graph == "pso":
-                plt.errorbar(range(len(file[0])), np.nanmean(file,axis=0), 0.3*file.std(axis=0),c=(0.7, colourOffset*0.15, 0), errorevery=100, label="Particle Swarm: " + label + " " + str(2*int(m.group(3))))
+                plt.errorbar(range(len(file[0])), np.nanmean(file,axis=0), file.std(axis=0),c=(colourOffset*0.1,0,0.7), errorevery=100, label="Particle Swarm: " + label + " " + str(2*int(m.group(3))))
         elif graph == "anneal":
-                plt.errorbar(range(len(file[0])), np.nanmean(file,axis=0), 0.3*file.std(axis=0),c=(colourOffset*0.1,0,0.7), errorevery=100, label="Simulated Annealing: " + label + " " + str(10*int(m.group(3))))
+                plt.errorbar(range(len(file[0])), np.nanmean(file,axis=0), file.std(axis=0),c=(0.7, colourOffset*0.15, 0), errorevery=100, label="Simulated Annealing: " + label + " " + str(10*int(m.group(3))))
         elif graph == "hillClimb":
-                plt.errorbar(range(len(file[0])), np.nanmean(file,axis=0), 0.3*file.std(axis=0),c=(colourOffset*0.1,0.7,0), errorevery=100, label="Hill Climbing")
+                plt.errorbar(range(len(file[0])), np.nanmean(file,axis=0), file.std(axis=0),c=(colourOffset*0.1,0.7,0), errorevery=100, label="Hill Climbing")
         colourOffset += 1
     plt.xlabel("Iterations")
     plt.ylabel("Score")
